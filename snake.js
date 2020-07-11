@@ -18,7 +18,7 @@ function drawScore() {
   ctx.fillStyle = "black";
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
-  ctx.fillText("分数：" + score, blockSize, blockSize);
+  ctx.fillText("Score: " + score, blockSize, blockSize);
 }
 function Block(col, row) {
   this.col = col;
@@ -42,7 +42,7 @@ Block.prototype.drawCircle = function(color) {
   var centerX = this.col * blockSize + blockSize / 2;
   var centerY = this.row * blockSize + blockSize / 2;
   ctx.fillStyle = color;
-  circle(centerX, centerY, blockSize / 2, true);
+  ctx.circle(centerX, centerY, blockSize / 2, true);
 };
 Block.prototype.equal = function(otherblock) {
   return this.col === otherblock.col && this.row === otherblock.row;
@@ -52,7 +52,7 @@ function Snake() {
   this.direction = "right";
   this.nextDirection = "right";
 }
-snake = new Snake();
+let snake = new Snake();
 function apple() {
   this.position = new Block(10, 10);
 }
@@ -99,15 +99,15 @@ Snake.prototype.printPlayer = function() {
   ctx.textBaseline = "bottom";
   ctx.font = "20px Arial";
   ctx.textAlign = "center";
-  ctx.fillText("P1", newHead.col, newHead.row + 20, blockSize);
+  ctx.fillText("P1", this.newHead.col, this.newHead.row + 20, blockSize);
 };
 var intervalId = setInterval(function() {
   ctx.clearRect(0, 0, width, height);
   drawScore();
   drawBorder();
-  Snake.drawSnake();
+  snake.drawSnake();
   apple.drawApple();
-  Snake.move();
+  snake.move();
 }, 100);
 Snake.prototype.checkCollision = function(head) {
   var leftCollision = head.col === 0;
@@ -133,20 +133,22 @@ var directions = {
 };
 var newDirection;
 Snake.prototype.setDirection = function() {
-  if (this.direction === "up" && this.newDirection === "down") {
+  if (this.direction === "up" && newDirection === "down") {
     return;
-  } else if (this.direction === "right" && this.newDirection === "left") {
+  } else if (this.direction === "right" && newDirection === "left") {
     return;
-  } else if (this.direction === "duwn" && this.newDirection === "up") {
+  } else if (this.direction === "duwn" && newDirection === "up") {
     return;
   }
 };
+/*
 var intervalId = setInterval(function() {
   ctx.clearRect(0, 0, width.height);
   drawBorder();
   drawScore();
   snake.drawSnake();
 }, 100);
+*/
 $("#body").keydown(function(event) {
   var newDirection = directions[event.keyCode];
   if (newDirection !== undefined) {
