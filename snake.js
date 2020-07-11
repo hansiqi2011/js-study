@@ -13,6 +13,15 @@ function drawBorder() {
   ctx.fillRect(0, 0, blockSize, height);
   ctx.fillRect(width - blockSize, 0, blockSize, height);
 }
+function circle(x,y,randius,fillCircle){
+  ctx.beginPath();
+  ctx.arc(x,y,randius,0,Math.PI*2,false);
+  if (fillCircle){
+    ctx.fill();
+  }else{
+    ctx.stroke();
+  }
+}
 function drawScore() {
   ctx.font = "20px Arial";
   ctx.fillStyle = "black";
@@ -42,29 +51,33 @@ Block.prototype.drawCircle = function(color) {
   var centerX = this.col * blockSize + blockSize / 2;
   var centerY = this.row * blockSize + blockSize / 2;
   ctx.fillStyle = color;
-  ctx.circle(centerX, centerY, blockSize / 2, true);
+  circle(centerX, centerY, blockSize / 2, true);
 };
 Block.prototype.equal = function(otherblock) {
   return this.col === otherblock.col && this.row === otherblock.row;
 };
-function Snake() {
-  this.segments = [new Block(7, 5), new Block(6, 5), new Block(5, 5)];
+function Snake(x,y) {
+  this.segments = [new Block(x, y), new Block(x-1, y), new Block(x-2, y)];
   this.direction = "right";
   this.nextDirection = "right";
 }
-let snake = new Snake();
-function apple() {
+
+let snake1 = new Snake(20,20);
+let snake2 = new Snake(20,40);
+
+function Apple() {
   this.position = new Block(10, 10);
 }
-Snake.prototype.drawSnake = function() {
+let apple = new Apple();
+Snake.prototype.drawSnake = function(color) {
   for (var i = 0; i < this.segments.length; i++) {
-    this.segments[i].drawSquare("blue");
+    this.segments[i].drawSquare(color);
   }
 };
-apple.prototype.drawApple = function() {
+Apple.prototype.drawApple = function() {
   this.position.drawCircle("limeGreen");
 };
-apple.prototype.move = function() {
+Apple.prototype.move = function() {
   var randomCol = Math.floor(Math.random() * (wib - 2)) + 1;
   var randonRow = Math.floor(Math.random() * (hib - 2)) + 1;
   this.position = new Block(randomCol, randonRow);
@@ -94,20 +107,24 @@ Snake.prototype.move = function() {
     this.segments.pop();
   }
 };
-Snake.prototype.printPlayer = function() {
+Snake.prototype.printPlayer = function(playerName) {
   ctx.fillStyle = "black";
   ctx.textBaseline = "bottom";
   ctx.font = "20px Arial";
   ctx.textAlign = "center";
-  ctx.fillText("P1", this.newHead.col, this.newHead.row + 20, blockSize);
+  ctx.fillText("playerName", this.newHead.col, this.newHead.row + 20, blockSize);
 };
 var intervalId = setInterval(function() {
   ctx.clearRect(0, 0, width, height);
   drawScore();
   drawBorder();
-  snake.drawSnake();
+  snake1.drawSnake("blue");
+  snake2.drawSnake("red");
+  snake1.printPlayer("P1");
+  snake2.printPlayer("P2")
   apple.drawApple();
-  snake.move();
+  snake1.move();
+  snake2.move();
 }, 100);
 Snake.prototype.checkCollision = function(head) {
   var leftCollision = head.col === 0;
@@ -141,17 +158,11 @@ Snake.prototype.setDirection = function() {
     return;
   }
 };
-/*
-var intervalId = setInterval(function() {
-  ctx.clearRect(0, 0, width.height);
-  drawBorder();
-  drawScore();
-  snake.drawSnake();
-}, 100);
-*/
+
 $("#body").keydown(function(event) {
   var newDirection = directions[event.keyCode];
   if (newDirection !== undefined) {
     snake.setDirection(newDirection);
   }
+  snake.setDirection(null);
 });
