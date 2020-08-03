@@ -1,6 +1,5 @@
 let appleColors=["blue","yellow","green"];
 var snake=[{x:8,y:10,direction:"left"}, {x:9,y:10,direction:"left"}, {x:10,y:10,direction:"left"}];
-
 var appleColor=appleColors[random()*appleColors.length];
 var applePosation=[100,100];
 function setup() {
