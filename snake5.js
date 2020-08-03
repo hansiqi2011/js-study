@@ -13,17 +13,17 @@ function drawWalls() {
     rect(0, 0, 400, 400);
 }
 
-function drawSnakePiece(x, y, color="blue", size=8) {
+function drawSnakePiece(x, y, color, size=8) {
     fill(color);
     rect(x*size-size/2, y*size-size/2, size, size);
     noFill();
 }
 
-function drawSnake(color="blue") {
+function drawSnake(color,size=8) {
     strokeWeight(0);
     fill(color);
     snake.forEach(piece => {
-        drawSnakePiece(piece.x,piece.y,color);
+        drawSnakePiece(piece.x,piece.y,color,size);
     });
     noFill();
 }
@@ -33,7 +33,7 @@ function updateSnake() {
         if (piece.direction === "left"){
             piece.x-1;
         }
-        piece.posation=[piece.x,piece.y]
+        piece.posation=[piece.x,piece.y];
     });
 }
 
