@@ -32,8 +32,8 @@ function updateSnake() {
     snake.forEach(piece=> {
         if (piece.direction === "left"){
             piece.x-1;
-            piece.posation=[piece.x,piece.y];
         }
+        piece.posation=[piece.x,piece.y]
     });
 }
 
@@ -44,7 +44,6 @@ function equal(posation1,posation2){
 function drawApple() {
 
 }
-
 
 function draw() {
     background("white");
