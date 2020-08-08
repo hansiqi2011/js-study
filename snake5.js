@@ -1,5 +1,5 @@
 let appleColors = ["blue", "yellow", "green"];
-const speed = 0.05;
+const speed = 0.1;
 var snake = [
     { x: 8, y: 10, direction: "left" },
     { x: 9, y: 10, direction: "left" },
