@@ -2,10 +2,11 @@ let appleColors = ["blue", "yellow", "green"];
 const speed = 0.25;
 let nextHeadDirection = "";
 var snake = [
-    { x: 8, y: 10, direction: "left" },
-    { x: 9, y: 10, direction: "left" },
-    { x: 9, y: 11, direction: "up" },
-    { x: 9, y: 12, direction: "up" },
+    { x: 20, y: 10, direction: "left" },
+    { x: 21, y: 10, direction: "left" },
+    { x: 21, y: 11, direction: "up" },
+    { x: 21, y: 12, direction: "up" },
+    { x: 21, y: 13, direction: "up" },
 ];
 var appleColor = appleColors[Math.random() * appleColors.length];
 var applePosation = [100, 100];
