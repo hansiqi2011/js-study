@@ -8,6 +8,10 @@ var snake = [
     { x: 21, y: 12, direction: "up" },
     { x: 21, y: 13, direction: "up" },
 ];
+snake.forEach((piece) => {
+    piece.position = [piece.x, piece.y];
+});
+
 var appleColor = appleColors[Math.random() * appleColors.length];
 var applePosation = [100, 100];
 var wallCollision = false;
@@ -38,6 +42,9 @@ function drawSnake(color, size = 8) {
 }
 
 function updateSnakePosition(speed) {
+    snake.forEach((piece) => {
+        piece.position = [piece.x, piece.y];
+    });
     snake.forEach((piece) => {
         if (piece.direction === "left") {
             piece.x -= speed;
@@ -71,17 +78,16 @@ function isUTurn() {
         (snake[0].direction === "right" && nextHeadDirection === "left")
     );
 }
+function equal(posation1, posation2) {
+    return posation1 === posation2;
+}
 
 function checkCollision() {
     wallCollision =
         snake[0].x <= 1 ||
         snake[0].x >= 49 ||
-        snake[0].y <= 5 ||
+        snake[0].y <= 1 ||
         snake[0].y >= 49;
-}
-
-function equal(posation1, posation2) {
-    return posation1 === posation2;
 }
 
 function drawApple() {}
