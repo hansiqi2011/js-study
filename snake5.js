@@ -1,5 +1,6 @@
 let appleColors = ["blue", "yellow", "green"];
-const speed = 0.1;
+const speed = 0.01;
+let nextHeadDirection = "";
 var snake = [
     { x: 8, y: 10, direction: "left" },
     { x: 9, y: 10, direction: "left" },
@@ -54,6 +55,9 @@ function updateSnakeDirection() {
     for (let a = snake.length - 1; a > 0; a--) {
         snake[a].direction = snake[a - 1].direction;
     }
+    if (nextHeadDirection !== "") {
+        snake[0].direction = nextHeadDirection;
+    }
 }
 
 function equal(posation1, posation2) {
@@ -69,6 +73,22 @@ function hasMovedOneStep(speed) {
         counter = 0;
         return true;
     } else return false;
+}
+
+function keyPressed() {
+    if (keyCode === 63) {
+        // A is left
+        nextHeadDirection = "left";
+    } else if (keyCode === 87) {
+        // W is up
+        nextHeadDirection = "up";
+    } else if (keyCode === 83) {
+        // S is down
+        nextHeadDirection = "down";
+    } else if (keyCode === 68) {
+        nextHeadDirection = "right";
+    }
+    return false;
 }
 
 function draw() {
