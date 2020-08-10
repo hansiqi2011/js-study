@@ -7,10 +7,8 @@ var snake = [
     { x: 21, y: 11, direction: "up" },
     { x: 21, y: 12, direction: "up" },
     { x: 21, y: 13, direction: "up" },
+    { x: 22, y: 13, direction: "left" },
 ];
-snake.forEach((piece) => {
-    piece.position = [piece.x, piece.y];
-});
 
 var appleColor = appleColors[Math.random() * appleColors.length];
 var applePosation = [100, 100];
@@ -42,9 +40,6 @@ function drawSnake(color, size = 8) {
 }
 
 function updateSnakePosition(speed) {
-    snake.forEach((piece) => {
-        piece.position = [piece.x, piece.y];
-    });
     snake.forEach((piece) => {
         if (piece.direction === "left") {
             piece.x -= speed;
@@ -78,6 +73,7 @@ function isUTurn() {
         (snake[0].direction === "right" && nextHeadDirection === "left")
     );
 }
+
 function equal(posation1, posation2) {
     return posation1 === posation2;
 }
@@ -88,6 +84,11 @@ function checkCollision() {
         snake[0].x >= 49 ||
         snake[0].y <= 1 ||
         snake[0].y >= 49;
+    snake.forEach((piece) => {
+        if (equal([snake[0].x, snake[0].y], [piece.x, piece.y])) {
+            selfCollision = true;
+        }
+    });
 }
 
 function drawApple() {}
@@ -119,7 +120,8 @@ function keyPressed() {
 }
 
 function draw() {
-    if (wallCollision) return;
+    checkCollision();
+    if (wallCollision || selfCollision) return;
     background("black");
     updateSnakePosition(speed);
     if (hasMovedOneStep(speed)) {
@@ -128,5 +130,4 @@ function draw() {
     drawSnake("blue");
     drawApple();
     drawWalls();
-    checkCollision();
 }
