@@ -9,11 +9,11 @@ var snake = [
     { x: 21, y: 13, direction: "up" },
     { x: 22, y: 13, direction: "left" },
 ];
-
 var appleColor = appleColors[Math.random() * appleColors.length];
-var applePosation = [100, 100];
+var applePosation = { x: 30, y: 20 };
 var wallCollision = false;
 var selfCollision = false;
+var collision = wallCollision || selfCollision;
 function setup() {
     createCanvas(400, 400);
 }
@@ -89,6 +89,7 @@ function checkCollision() {
             selfCollision = true;
         }
     });
+    collision = wallCollision || selfCollision;
 }
 
 function drawApple() {}
@@ -121,7 +122,7 @@ function keyPressed() {
 
 function draw() {
     checkCollision();
-    if (wallCollision || selfCollision) return;
+    if (collision) return;
     background("black");
     updateSnakePosition(speed);
     if (hasMovedOneStep(speed)) {
