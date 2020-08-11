@@ -7,15 +7,30 @@ var snake = [
     { x: 21, y: 11, direction: "up" },
     { x: 21, y: 12, direction: "up" },
     { x: 21, y: 13, direction: "up" },
-    { x: 22, y: 13, direction: "left" },
+    { x: 20, y: 13, direction: "right" },
 ];
 var appleColor = appleColors[Math.random() * appleColors.length];
 var applePosation = { x: 30, y: 20 };
 var wallCollision = false;
 var selfCollision = false;
 var collision = wallCollision || selfCollision;
+
+function gameOver() {}
+
 function setup() {
     createCanvas(400, 400);
+}
+
+function replay() {
+    snake = [
+        { x: 20, y: 10, direction: "left" },
+        { x: 21, y: 10, direction: "left" },
+        { x: 21, y: 11, direction: "up" },
+        { x: 21, y: 12, direction: "up" },
+        { x: 21, y: 13, direction: "up" },
+        { x: 20, y: 13, direction: "right" },
+    ];
+    collision = false;
 }
 
 function drawWalls() {
@@ -116,6 +131,8 @@ function keyPressed() {
     } else if (keyCode === 68) {
         // D is right
         nextHeadDirection = "right";
+    } else if (keyCode === 32) {
+        replay();
     }
     return false;
 }
