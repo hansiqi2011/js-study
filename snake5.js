@@ -1,6 +1,9 @@
-let appleColors = ["lightblue", "yellow", "green"];
+let appleColors = ["blue", "yellow", "red"];
 const speed = 0.25;
+var appleCollision = false;
+var score = 0;
 let nextHeadDirection = "";
+var apple;
 var snake = [
     { x: 20, y: 10, direction: "left" },
     { x: 21, y: 10, direction: "left" },
@@ -10,7 +13,7 @@ var snake = [
     { x: 20, y: 13, direction: "right" },
 ];
 var appleColor = appleColors[Math.floor(Math.random() * appleColors.length)];
-var applePosation = { x: 30, y: 20 };
+var applePosation = { x: 25, y: 25 };
 var wallCollision = false;
 var selfCollision = false;
 var collision = wallCollision || selfCollision;
@@ -90,7 +93,19 @@ function isUTurn() {
 }
 
 function equal(posation1, posation2) {
-    return posation1 === posation2;
+    return posation1.x == posation2.x && posation1.y == posation2.y;
+}
+
+function eatApple() {
+    appleCollision = equal({ x: snake[0].x, y: snake[0].y }, appleCollision);
+    if (appleCollision) {
+        score += 1;
+        applePosation.x = Math.floor((Math.random() * 400) / 8);
+        applePosation.y = Math.floor((Math.random() * 400) / 8);
+        appleColor =
+            appleColors[Math.floor(Math.random() * appleColors.length)];
+        appleCollision = false;
+    }
 }
 
 function checkCollision() {
@@ -99,17 +114,18 @@ function checkCollision() {
         snake[0].x >= 49 ||
         snake[0].y <= 1 ||
         snake[0].y >= 49;
-    snake.forEach((piece) => {
-        if (equal([snake[0].x, snake[0].y], [piece.x, piece.y])) {
-            selfCollision = true;
+    for (let s = snake.length - 1; s >= 1; s--) {
+        selfCollision = equal(snake[0], snake[s]);
+        if (selfCollision) {
+            break;
         }
-    });
+    }
     collision = wallCollision || selfCollision;
 }
 
 function drawApple(x, y, size = 8) {
     fill(appleColor);
-    rect(x * size - size / 2, y * size - size / 2, size, size);
+    apple = rect(x * size - size / 2, y * size - size / 2, size, size);
     noFill();
 }
 
@@ -152,4 +168,5 @@ function draw() {
     drawSnake("blue");
     drawApple(applePosation.x, applePosation.y);
     drawWalls();
+    eatApple();
 }
