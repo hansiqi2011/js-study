@@ -205,15 +205,15 @@ function keyPressed() {
 }
 
 function draw() {
+    drawWalls();
     drawSnake("blue");
     drawApple(applePosation.x, applePosation.y);
-    eatApple();
-    checkCollision();
-    if (collision) return;
     background("black");
-    updateSnakePosition(speed);
+    eatApple();
     if (hasMovedOneStep(speed)) {
         updateSnakeDirection();
     }
-    drawWalls();
+    updateSnakePosition(speed);
+    checkCollision();
+    if (collision) return;
 }
