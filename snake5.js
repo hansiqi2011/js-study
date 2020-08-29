@@ -4,7 +4,6 @@ var appleCollision = false;
 var score = 0;
 let nextHeadDirection = "";
 var apple;
-var historySnakeLength;
 var snake = [
     { x: 20, y: 10, direction: "left" },
     { x: 21, y: 10, direction: "left" },
@@ -29,7 +28,6 @@ function setup() {
 }
 
 function replay() {
-    historySnakeLength = snake.length;
     snake = [
         { x: 20, y: 10, direction: "left" },
         { x: 21, y: 10, direction: "left" },
@@ -38,9 +36,6 @@ function replay() {
         { x: 21, y: 13, direction: "up" },
         { x: 22, y: 13, direction: "left" },
     ];
-    for (let h = 0; h < historySnakeLength - 6; h++) {
-        addSnakePiece();
-    }
     collision = false;
     applePosation.x = Math.floor((Math.random() * 400) / 8);
     applePosation.y = Math.floor((Math.random() * 400) / 8);
