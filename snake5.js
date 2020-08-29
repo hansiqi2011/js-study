@@ -6,14 +6,18 @@ let nextHeadDirection = "";
 var historySnakeLength;
 var apple;
 var snake = [];
-snake.push({ x: Math.floor((Math.random() * 400) / 8) });
+snake.push({
+    x: 25 + Math.floor((Math.random() * 350) / 8),
+    y: 25 + Math.floor((Math.random() * 350) / 8),
+    direction: "left",
+});
 for (let o = 0; o < 5; o++) {
     addSnakePiece();
 }
 var appleColor = appleColors[Math.floor(Math.random() * appleColors.length)];
 var applePosation = {
-    x: Math.floor((Math.random() * 400) / 8),
-    y: Math.floor((Math.random() * 400) / 8),
+    x: 25 + Math.floor((Math.random() * 350) / 8),
+    y: 25 + Math.floor((Math.random() * 350) / 8),
 };
 var wallCollision = false;
 var selfCollision = false;
@@ -27,7 +31,11 @@ function setup() {
 
 function replay() {
     historySnakeLength = snake.length;
-    snake.push({ x: Math.floor((Math.random() * 400) / 8) });
+    snake.push({
+        x: 25 + Math.floor((Math.random() * 350) / 8),
+        y: 25 + Math.floor((Math.random() * 350) / 8),
+        direction: "left",
+    });
     for (let o = 0; o < historySnakeLength - 1; o++) {
         addSnakePiece();
     }
