@@ -41,6 +41,7 @@ function replay() {
     applePosation.y = Math.floor((Math.random() * 400) / 8);
     appleColor = appleColors[Math.floor(Math.random() * appleColors.length)];
     appleCollision = false;
+    score = 0;
 }
 
 function drawWalls() {
