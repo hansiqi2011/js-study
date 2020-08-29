@@ -38,7 +38,7 @@ function replay() {
         { x: 21, y: 13, direction: "up" },
         { x: 22, y: 13, direction: "left" },
     ];
-    for (let h = 0; h < historySnakeLength - snake.length; h++) {
+    for (let h = 0; h < historySnakeLength - 6; h++) {
         addSnakePiece();
     }
     collision = false;
