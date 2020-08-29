@@ -28,7 +28,7 @@ function setup() {
 function replay() {
     historySnakeLength = snake.length;
     snake.push({ x: Math.floor((Math.random() * 400) / 8) });
-    for (let o = 0; o < historySnakeLength; o++) {
+    for (let o = 0; o < historySnakeLength - 1; o++) {
         addSnakePiece();
     }
     collision = false;
