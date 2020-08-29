@@ -3,6 +3,7 @@ const speed = 0.25;
 var appleCollision = false;
 var score = 0;
 let nextHeadDirection = "";
+var historySnakeLength;
 var apple;
 var snake = [];
 snake.push({ x: Math.floor((Math.random() * 400) / 8) });
@@ -25,8 +26,9 @@ function setup() {
 }
 
 function replay() {
+    historySnakeLength = snake.length;
     snake.push({ x: Math.floor((Math.random() * 400) / 8) });
-    for (let o = 0; o < 5; o++) {
+    for (let o = 0; o < historySnakeLength; o++) {
         addSnakePiece();
     }
     collision = false;
