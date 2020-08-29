@@ -5,12 +5,13 @@ var score = 0;
 let nextHeadDirection = "";
 var historySnakeLength;
 var apple;
-var snake = [];
-snake.push({
-    x: 25 + Math.floor((Math.random() * 350) / 8),
-    y: 25 + Math.floor((Math.random() * 350) / 8),
-    direction: "left",
-});
+var snake = [
+    {
+        x: 25 + Math.floor((Math.random() * 350) / 8),
+        y: 25 + Math.floor((Math.random() * 350) / 8),
+        direction: "left",
+    },
+];
 for (let o = 0; o < 5; o++) {
     addSnakePiece();
 }
@@ -31,11 +32,13 @@ function setup() {
 
 function replay() {
     historySnakeLength = snake.length;
-    snake.push({
-        x: 25 + Math.floor((Math.random() * 350) / 8),
-        y: 25 + Math.floor((Math.random() * 350) / 8),
-        direction: "left",
-    });
+    snake = [
+        {
+            x: 25 + Math.floor((Math.random() * 350) / 8),
+            y: 25 + Math.floor((Math.random() * 350) / 8),
+            direction: "left",
+        },
+    ];
     for (let o = 0; o < historySnakeLength - 1; o++) {
         addSnakePiece();
     }
