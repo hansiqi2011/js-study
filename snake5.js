@@ -4,6 +4,7 @@ var appleCollision = false;
 var score = 0;
 let nextHeadDirection = "";
 var apple;
+var historySnakeLength;
 var snake = [
     { x: 20, y: 10, direction: "left" },
     { x: 21, y: 10, direction: "left" },
@@ -28,14 +29,18 @@ function setup() {
 }
 
 function replay() {
+    historySnakeLength = snake.length;
     snake = [
         { x: 20, y: 10, direction: "left" },
         { x: 21, y: 10, direction: "left" },
         { x: 21, y: 11, direction: "up" },
         { x: 21, y: 12, direction: "up" },
         { x: 21, y: 13, direction: "up" },
-        { x: 20, y: 13, direction: "right" },
+        { x: 22, y: 13, direction: "left" },
     ];
+    for (let h = 0; h < historySnakeLength - snake.length; h++) {
+        addSnakePiece();
+    }
     collision = false;
     applePosation.x = Math.floor((Math.random() * 400) / 8);
     applePosation.y = Math.floor((Math.random() * 400) / 8);
@@ -49,17 +54,19 @@ function drawWalls() {
     rect(0, 0, 400, 400);
 }
 
-function drawSnakePiece(x, y, color, size = 8) {
-    fill(color);
+function drawSnakePiece(x, y, size = 8) {
     rect(x * size - size / 2, y * size - size / 2, size, size);
-    noFill();
 }
 
 function drawSnake(color, size = 8) {
     strokeWeight(0);
-    fill(color);
     snake.forEach((piece) => {
-        drawSnakePiece(piece.x, piece.y, color, size);
+        if (piece === snake[0]) {
+            fill("white");
+        } else {
+            fill(color);
+        }
+        drawSnakePiece(piece.x, piece.y, size);
     });
     noFill();
 }
@@ -103,6 +110,35 @@ function equal(posation1, posation2) {
     return posation1.x == posation2.x && posation1.y == posation2.y;
 }
 
+function addSnakePiece() {
+    if (snake[snake.length - 1].direction === "left") {
+        snake.push({
+            x: snake[snake.length - 1].x + 1,
+            y: snake[snake.length - 1].y,
+            direction: "left",
+        });
+    } else if (snake[snake.length - 1].direction === "right") {
+        snake.push({
+            x: snake[snake.length - 1].x - 1,
+            y: snake[snake.length - 1].y,
+            direction: "right",
+        });
+    } else if (snake[snake.length - 1].direction === "up") {
+        snake.push({
+            x: snake[snake.length - 1].x,
+            y: snake[snake.length - 1].y + 1,
+            direction: "up",
+        });
+    }
+    if (snake[snake.length - 1].direction === "down") {
+        snake.push({
+            x: snake[snake.length - 1].x,
+            y: snake[snake.length - 1].y - 1,
+            direction: "down",
+        });
+    }
+}
+
 function eatApple() {
     appleCollision = equal(snake[0], applePosation);
     if (appleCollision) {
@@ -112,7 +148,9 @@ function eatApple() {
         appleColor =
             appleColors[Math.floor(Math.random() * appleColors.length)];
         appleCollision = false;
+        addSnakePiece();
         console.log(score);
+        console.log(snake.length);
     }
 }
 
@@ -169,6 +207,7 @@ function keyPressed() {
 }
 
 function draw() {
+    eatApple();
     checkCollision();
     if (collision) return;
     background("black");
@@ -179,5 +218,4 @@ function draw() {
     drawSnake("blue");
     drawApple(applePosation.x, applePosation.y);
     drawWalls();
-    eatApple();
 }
