@@ -205,6 +205,8 @@ function keyPressed() {
 }
 
 function draw() {
+    drawSnake("blue");
+    drawApple(applePosation.x, applePosation.y);
     eatApple();
     checkCollision();
     if (collision) return;
@@ -213,7 +215,5 @@ function draw() {
     if (hasMovedOneStep(speed)) {
         updateSnakeDirection();
     }
-    drawSnake("blue");
-    drawApple(applePosation.x, applePosation.y);
     drawWalls();
 }
