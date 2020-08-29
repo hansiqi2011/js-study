@@ -4,14 +4,11 @@ var appleCollision = false;
 var score = 0;
 let nextHeadDirection = "";
 var apple;
-var snake = [
-    { x: 20, y: 10, direction: "left" },
-    { x: 21, y: 10, direction: "left" },
-    { x: 21, y: 11, direction: "up" },
-    { x: 21, y: 12, direction: "up" },
-    { x: 21, y: 13, direction: "up" },
-    { x: 20, y: 13, direction: "right" },
-];
+var snake = [];
+snake.push({ x: Math.floor((Math.random() * 400) / 8) });
+for (let o = 0; o < 5; o++) {
+    addSnakePiece();
+}
 var appleColor = appleColors[Math.floor(Math.random() * appleColors.length)];
 var applePosation = {
     x: Math.floor((Math.random() * 400) / 8),
@@ -28,20 +25,15 @@ function setup() {
 }
 
 function replay() {
-    snake = [
-        { x: 20, y: 10, direction: "left" },
-        { x: 21, y: 10, direction: "left" },
-        { x: 21, y: 11, direction: "up" },
-        { x: 21, y: 12, direction: "up" },
-        { x: 21, y: 13, direction: "up" },
-        { x: 22, y: 13, direction: "left" },
-    ];
+    snake.push({ x: Math.floor((Math.random() * 400) / 8) });
+    for (let o = 0; o < 5; o++) {
+        addSnakePiece();
+    }
     collision = false;
     applePosation.x = Math.floor((Math.random() * 400) / 8);
     applePosation.y = Math.floor((Math.random() * 400) / 8);
     appleColor = appleColors[Math.floor(Math.random() * appleColors.length)];
     appleCollision = false;
-    score = 0;
 }
 
 function drawWalls() {
