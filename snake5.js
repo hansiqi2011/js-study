@@ -1,4 +1,4 @@
-let appleColors = ["blue", "yellow", "green"];
+let appleColors = ["lightblue", "yellow", "green"];
 const speed = 0.25;
 let nextHeadDirection = "";
 var snake = [
@@ -9,7 +9,7 @@ var snake = [
     { x: 21, y: 13, direction: "up" },
     { x: 20, y: 13, direction: "right" },
 ];
-var appleColor = appleColors[Math.random() * appleColors.length];
+var appleColor = appleColors[Math.floor(Math.random() * appleColors.length)];
 var applePosation = { x: 30, y: 20 };
 var wallCollision = false;
 var selfCollision = false;
@@ -107,7 +107,11 @@ function checkCollision() {
     collision = wallCollision || selfCollision;
 }
 
-function drawApple() {}
+function drawApple(x, y, size = 8) {
+    fill(appleColor);
+    rect(x * size - size / 2, y * size - size / 2, size, size);
+    noFill();
+}
 
 var counter = 0;
 function hasMovedOneStep(speed) {
@@ -146,6 +150,6 @@ function draw() {
         updateSnakeDirection();
     }
     drawSnake("blue");
-    drawApple();
+    drawApple(applePosation.x, applePosation.y);
     drawWalls();
 }
