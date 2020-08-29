@@ -205,10 +205,10 @@ function keyPressed() {
 }
 
 function draw() {
+    background("black");
     drawWalls();
     drawSnake("blue");
     drawApple(applePosation.x, applePosation.y);
-    background("black");
     eatApple();
     if (hasMovedOneStep(speed)) {
         updateSnakeDirection();
