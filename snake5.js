@@ -13,7 +13,10 @@ var snake = [
     { x: 20, y: 13, direction: "right" },
 ];
 var appleColor = appleColors[Math.floor(Math.random() * appleColors.length)];
-var applePosation = { x: 25, y: 25 };
+var applePosation = {
+    x: Math.floor((Math.random() * 400) / 8),
+    y: Math.floor((Math.random() * 400) / 8),
+};
 var wallCollision = false;
 var selfCollision = false;
 var collision = wallCollision || selfCollision;
@@ -34,6 +37,10 @@ function replay() {
         { x: 20, y: 13, direction: "right" },
     ];
     collision = false;
+    applePosation.x = Math.floor((Math.random() * 400) / 8);
+    applePosation.y = Math.floor((Math.random() * 400) / 8);
+    appleColor = appleColors[Math.floor(Math.random() * appleColors.length)];
+    appleCollision = false;
 }
 
 function drawWalls() {
@@ -97,7 +104,7 @@ function equal(posation1, posation2) {
 }
 
 function eatApple() {
-    appleCollision = equal({ x: snake[0].x, y: snake[0].y }, appleCollision);
+    appleCollision = equal(snake[0], applePosation);
     if (appleCollision) {
         score += 1;
         applePosation.x = Math.floor((Math.random() * 400) / 8);
@@ -105,6 +112,7 @@ function eatApple() {
         appleColor =
             appleColors[Math.floor(Math.random() * appleColors.length)];
         appleCollision = false;
+        console.log(score);
     }
 }
 
@@ -152,7 +160,10 @@ function keyPressed() {
         // D is right
         nextHeadDirection = "right";
     } else if (keyCode === 32) {
-        replay();
+        //SPACE is replay
+        if (collision) {
+            replay();
+        }
     }
     return false;
 }
