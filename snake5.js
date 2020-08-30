@@ -3,7 +3,6 @@ const speed = 0.25;
 var appleCollision = false;
 var score = 0;
 let nextHeadDirection = "";
-var historySnakeLength;
 var apple;
 var snake = [
     {
@@ -31,7 +30,6 @@ function setup() {
 }
 
 function replay() {
-    historySnakeLength = snake.length;
     snake = [
         {
             x: Math.floor((25 + Math.random() * 350) / 8),
@@ -39,7 +37,7 @@ function replay() {
             direction: "left",
         },
     ];
-    for (let o = 0; o < historySnakeLength - 1; o++) {
+    for (let o = 0; o < 5; o++) {
         addSnakePiece();
     }
     collision = false;
@@ -47,6 +45,7 @@ function replay() {
     applePosation.y = Math.floor((Math.random() * 400) / 8);
     appleColor = appleColors[Math.floor(Math.random() * appleColors.length)];
     appleCollision = false;
+    score = 0;
 }
 
 function drawWalls() {
