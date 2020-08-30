@@ -7,8 +7,8 @@ var historySnakeLength;
 var apple;
 var snake = [
     {
-        x: 25 + Math.floor((Math.random() * 350) / 8),
-        y: 25 + Math.floor((Math.random() * 350) / 8),
+        x: Math.floor((25 + Math.random() * 350) / 8),
+        y: Math.floor((25 + Math.random() * 350) / 8),
         direction: "left",
     },
 ];
@@ -17,8 +17,8 @@ for (let o = 0; o < 5; o++) {
 }
 var appleColor = appleColors[Math.floor(Math.random() * appleColors.length)];
 var applePosation = {
-    x: 25 + Math.floor((Math.random() * 350) / 8),
-    y: 25 + Math.floor((Math.random() * 350) / 8),
+    x: Math.floor((25 + Math.random() * 350) / 8),
+    y: Math.floor((25 + Math.random() * 350) / 8),
 };
 var wallCollision = false;
 var selfCollision = false;
@@ -34,8 +34,8 @@ function replay() {
     historySnakeLength = snake.length;
     snake = [
         {
-            x: 25 + Math.floor((Math.random() * 350) / 8),
-            y: 25 + Math.floor((Math.random() * 350) / 8),
+            x: Math.floor((25 + Math.random() * 350) / 8),
+            y: Math.floor((25 + Math.random() * 350) / 8),
             direction: "left",
         },
     ];
@@ -144,8 +144,8 @@ function eatApple() {
     appleCollision = equal(snake[0], applePosation);
     if (appleCollision) {
         score += 1;
-        applePosation.x = Math.floor((Math.random() * 400) / 8);
-        applePosation.y = Math.floor((Math.random() * 400) / 8);
+        applePosation.x = Math.floor((25 + Math.random() * 350) / 8);
+        applePosation.y = Math.floor((25 + Math.random() * 350) / 8);
         appleColor =
             appleColors[Math.floor(Math.random() * appleColors.length)];
         appleCollision = false;
@@ -208,15 +208,15 @@ function keyPressed() {
 }
 
 function draw() {
+    checkCollision();
+    if (collision) return;
+    eatApple();
     background("black");
     drawWalls();
     drawSnake("blue");
     drawApple(applePosation.x, applePosation.y);
-    eatApple();
     if (hasMovedOneStep(speed)) {
         updateSnakeDirection();
     }
     updateSnakePosition(speed);
-    checkCollision();
-    if (collision) return;
 }
