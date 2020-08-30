@@ -54,6 +54,13 @@ function drawWalls() {
     rect(0, 0, 400, 400);
 }
 
+function drawScore() {
+    noStroke();
+    fill("white");
+    textSize(15);
+    text("score:" + score, 20, 20);
+}
+
 function drawSnakePiece(x, y, size = 8) {
     rect(x * size - size / 2, y * size - size / 2, size, size);
 }
@@ -212,6 +219,7 @@ function draw() {
     eatApple();
     background("black");
     drawWalls();
+    drawScore();
     drawSnake("blue");
     drawApple(applePosation.x, applePosation.y);
     if (hasMovedOneStep(speed)) {
