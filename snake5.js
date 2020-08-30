@@ -214,17 +214,29 @@ function keyPressed() {
 }
 
 function mousePressed() {
-    if (mouseX <= 100) {
-        nextHeadDirection = "left";
-    }
-    if (mouseY <= 100) {
-        nextHeadDirection = "up";
-    }
-    if (mouseX >= 300) {
-        nextHeadDirection = "right";
-    }
-    if (mouseY >= 300) {
-        nextHeadDirection = "down";
+    mouseOrTouch();
+}
+
+function touchEnded() {
+    mouseOrTouch();
+}
+
+function mouseOrTouch() {
+    if (!collision) {
+        if (mouseX <= 100) {
+            nextHeadDirection = "left";
+        }
+        if (mouseY <= 100) {
+            nextHeadDirection = "up";
+        }
+        if (mouseX >= 300) {
+            nextHeadDirection = "right";
+        }
+        if (mouseY >= 300) {
+            nextHeadDirection = "down";
+        }
+    } else {
+        replay();
     }
 }
 
