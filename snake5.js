@@ -156,8 +156,6 @@ function eatApple() {
             appleColors[Math.floor(Math.random() * appleColors.length)];
         appleCollision = false;
         addSnakePiece();
-        console.log(score);
-        console.log(snake.length);
     }
 }
 
