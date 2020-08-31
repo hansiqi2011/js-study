@@ -214,14 +214,14 @@ function keyPressed() {
 }
 
 function mousePressed() {
-    mouseOrTouch();
+    mouseOrTouch("mouse");
 }
 
 function touchEnded() {
-    mouseOrTouch();
+    mouseOrTouch("touch");
 }
 
-function mouseOrTouch() {
+function mouseOrTouch(mouseOrTouch) {
     if (!collision) {
         if (mouseX <= 100) {
             nextHeadDirection = "left";
