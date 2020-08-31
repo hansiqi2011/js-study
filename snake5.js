@@ -214,11 +214,7 @@ function keyPressed() {
 }
 
 function mousePressed() {
-    mouseOrTouch("mouse");
-}
-
-function touchEnded() {
-    mouseOrTouch("touch");
+    mouseOrTouch();
 }
 
 function mouseOrTouch(mouseOrTouch) {
