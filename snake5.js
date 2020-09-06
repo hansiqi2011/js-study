@@ -1,13 +1,13 @@
 let appleColors = ["blue", "yellow", "red"];
-const speed = 0.25;
+let speed = 0.25;
 var appleCollision = false;
 var score = 0;
 let nextHeadDirection = "";
 var apple;
 var snake = [
     {
-        x: Math.floor((25 + Math.random() * 350) / 8),
-        y: Math.floor((25 + Math.random() * 350) / 8),
+        x: Math.floor((Math.random() * 350 + 25) / 8),
+        y: Math.floor((Math.random() * 350 + 25) / 8),
         direction: "left",
     },
 ];
@@ -16,14 +16,20 @@ for (let o = 0; o < 5; o++) {
 }
 var appleColor = appleColors[Math.floor(Math.random() * appleColors.length)];
 var applePosation = {
-    x: Math.floor((25 + Math.random() * 350) / 8),
-    y: Math.floor((25 + Math.random() * 350) / 8),
+    x: Math.floor((Math.random() * 350 + 25) / 8),
+    y: Math.floor((Math.random() * 350 + 25) / 8),
 };
 var wallCollision = false;
 var selfCollision = false;
 var collision = wallCollision || selfCollision;
 
-function gameOver() {}
+function gameOver() {
+    noStroke();
+    fill("white");
+    textSize(50);
+    text("GAME OVER", 50, 200);
+    noFill();
+}
 
 function setup() {
     createCanvas(400, 400);
@@ -32,8 +38,8 @@ function setup() {
 function replay() {
     snake = [
         {
-            x: Math.floor((25 + Math.random() * 350) / 8),
-            y: Math.floor((25 + Math.random() * 350) / 8),
+            x: Math.floor((Math.random() * 350 + 25) / 8),
+            y: Math.floor((Math.random() * 350 + 25) / 8),
             direction: "left",
         },
     ];
@@ -211,39 +217,33 @@ function keyPressed() {
     return false;
 }
 
-function mousePressed() {
-    mouseOrTouch();
-}
-
-function mouseOrTouch(mouseOrTouch) {
-    if (!collision) {
-        if (mouseX <= 100) {
+function touchStarted() {
+    if (touches.length != 0) {
+        if (touches[0].x <= 100) {
             nextHeadDirection = "left";
-        }
-        if (mouseY <= 100) {
+        } else if (touches[0].y <= 100) {
             nextHeadDirection = "up";
-        }
-        if (mouseX >= 300) {
+        } else if (touches[0].x >= 300) {
             nextHeadDirection = "right";
-        }
-        if (mouseY >= 300) {
+        } else if (touches[0].y >= 300) {
             nextHeadDirection = "down";
         }
-    } else {
-        replay();
     }
 }
 
 function draw() {
     checkCollision();
-    if (collision) return;
+    if (collision) {
+        gameOver();
+        return;
+    }
     eatApple();
     background("black");
     drawWalls();
     drawScore();
     drawSnake("blue");
     drawApple(applePosation.x, applePosation.y);
-    if (hasMovedOneStep(speed)) {
+    if (hasMovedOneStep(speed) && !collision) {
         updateSnakeDirection();
     }
     updateSnakePosition(speed);
