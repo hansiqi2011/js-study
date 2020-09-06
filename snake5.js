@@ -219,7 +219,7 @@ function keyPressed() {
 }
 
 function touchStarted() {
-    if (touches.length != 0) {
+    if (touches.length != 0 && !collision) {
         if (touches[0].x <= 100) {
             nextHeadDirection = "left";
         } else if (touches[0].y <= 100) {
@@ -228,6 +228,9 @@ function touchStarted() {
             nextHeadDirection = "right";
         } else if (touches[0].y >= 300) {
             nextHeadDirection = "down";
+        }
+        if (collision) {
+            replay();
         }
     }
 }
