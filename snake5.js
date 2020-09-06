@@ -1,5 +1,5 @@
 let appleColors = ["blue", "yellow", "red"];
-let speed = 0.25;
+let speed = 0.125;
 var appleCollision = false;
 var score = 0;
 let nextHeadDirection = "";
