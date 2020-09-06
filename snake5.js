@@ -1,9 +1,10 @@
 let appleColors = ["blue", "yellow", "red"];
-let speed = 0.2;
+let speed = 0.25;
 var appleCollision = false;
 var score = 0;
 let nextHeadDirection = "";
 var apple;
+let testSound;
 var snake = [
     {
         x: Math.floor((Math.random() * 350 + 25) / 8),
