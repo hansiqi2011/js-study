@@ -1,28 +1,61 @@
+let goldenCounter = 0;
 let appleColors = ["blue", "yellow", "red"];
 let speed = 0.25;
-var appleCollision = false;
-var score = 0;
+let appleCollision = false;
+let score = 0;
 let nextHeadDirection = "";
-var apple;
+let apple;
 let testSound;
-var snake = [
+let snake = [
     {
-        x: Math.floor((Math.random() * 350 + 25) / 8),
-        y: Math.floor((Math.random() * 350 + 25) / 8),
+        x: Math.floor((Math.random() * 400) / 8),
+        y: Math.floor((Math.random() * 400) / 8),
         direction: "left",
     },
 ];
 for (let o = 0; o < 5; o++) {
     addSnakePiece();
 }
-var appleColor = appleColors[Math.floor(Math.random() * appleColors.length)];
-var applePosation = {
-    x: Math.floor((Math.random() * 350 + 25) / 8),
-    y: Math.floor((Math.random() * 350 + 25) / 8),
+let isGolden = false;
+let appleColor = appleColors[Math.floor(Math.random() * appleColors.length)];
+let applePosation = {
+    x: Math.floor((Math.random() * 400) / 8),
+    y: Math.floor((Math.random() * 400) / 8),
 };
-var wallCollision = false;
-var selfCollision = false;
-var collision = wallCollision || selfCollision;
+let wallCollision = false;
+let selfCollision = false;
+let collision = wallCollision || selfCollision;
+
+function oddOrEven(num) {
+    if (num / 2 === Math.floor(num / 2)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function around(aroundnum, num, range) {
+    if (
+        (aroundnum > num && aroundnum - range < num) ||
+        (aroundnum < num && aroundnum - range > num)
+    ) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function unitTest(_id_) {
+    if (_id_ === "set up") {
+        let sxe = oddOrEven(snake[0].x * 8);
+        let sye = oddOrEven(snake[0].y * 8);
+        let axe = oddOrEven(applePosation.x * 8);
+        let aye = oddOrEven(applePosation.y * 8);
+        if (!sxe || !sye || !axe || !aye) {
+            console.error("Please check the set up program");
+        }
+    }
+}
 
 function gameOver() {
     noStroke();
@@ -37,10 +70,11 @@ function setup() {
 }
 
 function replay() {
+    isGolden = false;
     snake = [
         {
-            x: Math.floor((Math.random() * 350 + 25) / 8),
-            y: Math.floor((Math.random() * 350 + 25) / 8),
+            x: Math.floor((Math.random() * 400) / 8),
+            y: Math.floor((Math.random() * 400) / 8),
             direction: "left",
         },
     ];
@@ -77,6 +111,8 @@ function drawSnake(color, size = 8) {
     snake.forEach((piece) => {
         if (piece === snake[0]) {
             fill("white");
+        } else if (isGolden) {
+            fill("yellow");
         } else {
             fill(color);
         }
@@ -156,6 +192,11 @@ function addSnakePiece() {
 function eatApple() {
     appleCollision = equal(snake[0], applePosation);
     if (appleCollision) {
+        if (appleColor === "yellow") {
+            isGolden = true;
+        } else {
+            isGolden = false;
+        }
         score += 1;
         applePosation.x = Math.floor((25 + Math.random() * 350) / 8);
         applePosation.y = Math.floor((25 + Math.random() * 350) / 8);
@@ -240,6 +281,12 @@ function draw() {
     if (collision) {
         gameOver();
         return;
+    }
+    if (isGolden) {
+        goldenCounter += 1;
+    }
+    if (goldenCounter >= 6000) {
+        isGolden = false;
     }
     eatApple();
     background("black");
