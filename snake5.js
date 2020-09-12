@@ -1,3 +1,4 @@
+const size = 8;
 let goldenCounter = 0;
 let appleColors = ["blue", "yellow", "red"];
 let speed = 0.25;
@@ -8,8 +9,8 @@ let apple;
 let testSound;
 let snake = [
     {
-        x: Math.floor((Math.random() * 400) / 8),
-        y: Math.floor((Math.random() * 400) / 8),
+        x: Math.floor((Math.random() * 400) / size),
+        y: Math.floor((Math.random() * 400) / size),
         direction: "left",
     },
 ];
@@ -19,8 +20,8 @@ for (let o = 0; o < 5; o++) {
 let isGolden = false;
 let appleColor = appleColors[Math.floor(Math.random() * appleColors.length)];
 let applePosation = {
-    x: Math.floor((Math.random() * 400) / 8),
-    y: Math.floor((Math.random() * 400) / 8),
+    x: Math.floor((Math.random() * 400) / size),
+    y: Math.floor((Math.random() * 400) / size),
 };
 let wallCollision = false;
 let selfCollision = false;
@@ -47,10 +48,10 @@ function around(aroundnum, num, range) {
 
 function unitTest(_id_) {
     if (_id_ === "set up") {
-        let sxe = oddOrEven(snake[0].x * 8);
-        let sye = oddOrEven(snake[0].y * 8);
-        let axe = oddOrEven(applePosation.x * 8);
-        let aye = oddOrEven(applePosation.y * 8);
+        let sxe = oddOrEven(snake[0].x * size);
+        let sye = oddOrEven(snake[0].y * size);
+        let axe = oddOrEven(applePosation.x * size);
+        let aye = oddOrEven(applePosation.y * size);
         if (!sxe || !sye || !axe || !aye) {
             console.error("Please check the set up program");
         }
@@ -73,8 +74,8 @@ function replay() {
     isGolden = false;
     snake = [
         {
-            x: Math.floor((Math.random() * 400) / 8),
-            y: Math.floor((Math.random() * 400) / 8),
+            x: Math.floor((Math.random() * 400) / size),
+            y: Math.floor((Math.random() * 400) / size),
             direction: "left",
         },
     ];
@@ -82,8 +83,8 @@ function replay() {
         addSnakePiece();
     }
     collision = false;
-    applePosation.x = Math.floor((Math.random() * 400) / 8);
-    applePosation.y = Math.floor((Math.random() * 400) / 8);
+    applePosation.x = Math.floor((Math.random() * 400) / size);
+    applePosation.y = Math.floor((Math.random() * 400) / size);
     appleColor = appleColors[Math.floor(Math.random() * appleColors.length)];
     appleCollision = false;
     score = 0;
@@ -102,11 +103,11 @@ function drawScore() {
     text("score:" + score, 20, 20);
 }
 
-function drawSnakePiece(x, y, size = 8) {
+function drawSnakePiece(x, y, size) {
     rect(x * size - size / 2, y * size - size / 2, size, size);
 }
 
-function drawSnake(color, size = 8) {
+function drawSnake(color, size) {
     strokeWeight(0);
     snake.forEach((piece) => {
         if (piece === snake[0]) {
@@ -156,8 +157,8 @@ function isUTurn() {
     );
 }
 
-function equal(posation1, posation2) {
-    return posation1.x == posation2.x && posation1.y == posation2.y;
+function equal(self1, self2) {
+    return self1.x == self2.x && self1.y == self2.y;
 }
 
 function addSnakePiece() {
@@ -198,8 +199,8 @@ function eatApple() {
             isGolden = false;
         }
         score += 1;
-        applePosation.x = Math.floor((25 + Math.random() * 350) / 8);
-        applePosation.y = Math.floor((25 + Math.random() * 350) / 8);
+        applePosation.x = Math.floor((Math.random() * 400) / size);
+        applePosation.y = Math.floor((Math.random() * 400) / size);
         appleColor =
             appleColors[Math.floor(Math.random() * appleColors.length)];
         appleCollision = false;
@@ -215,14 +216,11 @@ function checkCollision() {
         snake[0].y >= 49;
     for (let s = snake.length - 1; s >= 1; s--) {
         selfCollision = equal(snake[0], snake[s]);
-        if (selfCollision) {
-            break;
-        }
     }
     collision = wallCollision || selfCollision;
 }
 
-function drawApple(x, y, size = 8) {
+function drawApple(x, y, size) {
     fill(appleColor);
     apple = rect(x * size - size / 2, y * size - size / 2, size, size);
     noFill();
@@ -292,8 +290,8 @@ function draw() {
     background("black");
     drawWalls();
     drawScore();
-    drawSnake("blue");
-    drawApple(applePosation.x, applePosation.y);
+    drawSnake("blue", size);
+    drawApple(applePosation.x, applePosation.y, size);
     if (hasMovedOneStep(speed) && !collision) {
         updateSnakeDirection();
     }
