@@ -1,3 +1,5 @@
+const INIT_PERSON_NUMBER = 100;
+
 function setup() {
     createCanvas(600, 600);
     background("#969696");
@@ -6,7 +8,7 @@ function setup() {
 }
 const randInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
 let samples = [];
-for (let index = 0; index < 40; index++) {
+for (let index = 0; index < INIT_PERSON_NUMBER; index++) {
     samples.push({
         x: randInt(0, 600),
         y: randInt(0, 600),
