@@ -1,0 +1,12 @@
+div.input {
+    display: block;
+}
+div#inputs {
+    font-size: medium;
+}
+p#spreadSpeedOutput {
+    display: inline;
+}
+input {
+    color: red;
+}
