@@ -10,3 +10,6 @@ p#spreadSpeedOutput {
 input {
     color: red;
 }
+input.input {
+    display: inline;
+}

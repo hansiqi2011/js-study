@@ -1,13 +1,21 @@
 const INIT_PEOPLE_NUMBER = 50;
-const WORLD_SIZE = 400;
-let curetime = 1000;
-let spreadSpeed = 0.01;
+const WORLD_SIZE = 600;
+let recoverTime = 500;
+let infectionRatio = 0.01;
 let infetedPeopleNumber = 1;
-
-let samples = [];
+let population = [];
 
 const randInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
 
+const createPerson = () => ({
+    x: randInt(0, WORLD_SIZE),
+    y: randInt(0, WORLD_SIZE),
+    xs: randInt(-2, 2),
+    ys: randInt(-2, 2),
+    isPositive: false,
+    healthLevel: recoverTime,
+    hasAntibody: false,
+});
 function createPopulation() {
     let population = [];
     for (let index = 0; index < INIT_PEOPLE_NUMBER; index++) {
@@ -15,36 +23,50 @@ function createPopulation() {
     }
     return population;
 }
-function createPerson() {
-    return {
-        x: randInt(0, WORLD_SIZE),
-        y: randInt(0, WORLD_SIZE),
-        xs: randInt(-2, 2),
-        ys: randInt(-2, 2),
-        isPositive: false,
-        healthLevel: curetime * 1000,
-        antibodyLevel: 0,
-    };
-}
 
-function checkInfection(p1, p2) {}
-
+/**
+ * 感染一个人，让他成为阳性，健康值降为0，并拥有抗体
+ * @param person 被感染的人
+ */
 function infect(person) {
     person.isPositive = true;
-    person.antibodyLevel = 1;
+    person.hasAntibody = true;
     person.healthLevel = 0;
 }
 
-function drawPerson(person) {
-    if (person.isPositive) fill("#f00");
-    else if (person.antibodyLevel > 0) fill("orange");
-    else fill("#0f0");
-    ellipse(person.x, person.y, 10, 10);
+function randomWalk(person) {
+    if (Math.random() < 0.01) {
+        person.xs = randInt(-2, 2);
+        person.ys = randInt(-2, 2);
+    }
+    person.x += person.xs;
+    person.y += person.ys;
+    if (person.x <= 0 || person.x >= WORLD_SIZE) person.xs *= -1;
+    if (person.y <= 0 || person.y >= WORLD_SIZE) person.ys *= -1;
 }
-function updatePersonPosition(person) {}
+function recover(person) {
+    //TODO: 有几率死亡
+    if (person.healthLevel < recoverTime) {
+        person.healthLevel++;
+    } else person.isPositive = false;
+}
+
+function closeEnough(p1, p2) {
+    return dist(p1.x, p1.y, p2.x, p2.y) < 30;
+}
+const checkInfection = (targetPerson, sourcePerson) => {
+    return (
+        targetPerson !== sourcePerson &&
+        closeEnough(targetPerson, sourcePerson) &&
+        sourcePerson.isPositive &&
+        !targetPerson.hasAntibody &&
+        Math.random() <= infectionRatio
+    );
+};
+
 function initWorld() {
-    samples = createPopulation();
-    infect(samples[0]);
+    population = createPopulation();
+    infect(population[0]);
 }
 function setup() {
     createCanvas(WORLD_SIZE, WORLD_SIZE);
@@ -52,58 +74,43 @@ function setup() {
     noStroke();
     initWorld();
 }
-function move(sample) {
-    if (random() < 0.01) {
-        sample.xs = randInt(-2, 2);
-        sample.ys = randInt(-2, 2);
-    }
-    sample.x += sample.xs;
-    sample.y += sample.ys;
-    if (sample.x <= 0 || sample.x >= WORLD_SIZE) sample.xs *= -1;
-    if (sample.y <= 0 || sample.y >= WORLD_SIZE) sample.ys *= -1;
+
+function drawPerson(person) {
+    if (person.isPositive) fill("#f00");
+    else if (person.hasAntibody) fill("orange");
+    else fill("#0f0");
+    ellipse(person.x, person.y, 10);
 }
-function updateState(sample1, sample2) {
-    if (Math.random() <= spreadSpeed) {
-        if (sample1.antibodyLevel == 0) {
-            infect(sample1);
-        }
-        if (sample2.antibodyLevel == 0) {
-            infect(sample2);
-        }
-    }
-}
-function draw() {
-    infetedPeopleNumber = 0;
-    fill(0);
-    rect(0, 0, WORLD_SIZE, WORLD_SIZE);
-    samples.forEach((elm1) => {
-        if (elm1.isPositive) infetedPeopleNumber++;
-        if (elm1.healthLevel < 100) {
-            elm1.healthLevel++;
-            if (elm1.healthLevel == 0) elm1.antibodyLevel = 1;
-        } else elm1.isPositive = false;
-        move(elm1);
-        drawPerson(elm1);
-        samples.forEach((elm2) => {
-            if (
-                dist(elm1.x, elm1.y, elm2.x, elm2.y) <= 30 &&
-                (elm1.isPositive || elm2.isPositive)
-            )
-                updateState(elm1, elm2);
-        });
-    });
+function showInfection() {
     document.getElementById("infectionOutput").innerHTML =
         "infected people number: " +
         str(infetedPeopleNumber) +
         "/" +
         str(INIT_PEOPLE_NUMBER);
 }
-function change() {
-    spreadSpeed = document.getElementById("spreadSpeed").value;
-    spreadSpeedOutput = document.getElementById("spreadSpeedOutput");
-    spreadSpeedOutput.innerHTML = str(spreadSpeed * 100) + "%";
+
+function draw() {
+    infetedPeopleNumber = 0;
+    fill(0);
+    rect(0, 0, WORLD_SIZE, WORLD_SIZE);
+    population.forEach((person) => {
+        randomWalk(person);
+        recover(person);
+        population.forEach((otherPerson) => {
+            if (checkInfection(person, otherPerson)) infect(person);
+        });
+        drawPerson(person);
+        if (person.isPositive) infetedPeopleNumber++;
+    });
+    showInfection();
+}
+
+function onInfectionRatioChange() {
+    infectionRatio = document.getElementById("infectionRatio").value;
+    document.getElementById("infectionRatioOutput").innerHTML =
+        str(infectionRatio * 100) + "%";
 }
 function addPositive() {
-    let unluckyPerson = samples[randInt(1, INIT_PEOPLE_NUMBER)];
+    let unluckyPerson = population[randInt(1, INIT_PEOPLE_NUMBER)];
     infect(unluckyPerson);
 }
