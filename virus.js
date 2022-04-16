@@ -77,7 +77,7 @@ function setup() {
 
 function drawPerson(person) {
     if (person.isPositive) fill("#f00");
-    else if (person.hasAntibody) fill("orange");
+    else if (person.hasAntibody) fill("#00f");
     else fill("#0f0");
     ellipse(person.x, person.y, 10);
 }
@@ -108,7 +108,7 @@ function draw() {
 function onInfectionRatioChange() {
     infectionRatio = document.getElementById("infectionRatio").value;
     document.getElementById("infectionRatioOutput").innerHTML =
-        str(infectionRatio * 100) + "%";
+        str(Math.round(infectionRatio * 100)) + "%";
 }
 function addPositive() {
     let unluckyPerson = population[randInt(1, INIT_PEOPLE_NUMBER)];

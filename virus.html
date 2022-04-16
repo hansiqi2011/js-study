@@ -11,10 +11,10 @@
     </head>
     <body>
         <div id="inputs">
-            <div class="input">
+            <div class="io">
                 <input type="button" value="reset" onclick="initWorld()" />
             </div>
-            <div class="input">
+            <div class="io">
                 <input
                     type="range"
                     id="infectionRatio"
@@ -26,15 +26,13 @@
                 />
                 <span id="infectionRatioOutput">1%</span>
             </div>
-            <div class="input">
+            <div class="io">
+                <span id="infectionOutput"></span>
                 <input
                     type="button"
                     value="add positive"
                     onclick="addPositive()"
                 />
-            </div>
-            <div class="output">
-                <p id="infectionOutput"></p>
             </div>
         </div>
     </body>

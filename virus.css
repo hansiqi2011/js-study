@@ -7,9 +7,14 @@ div#inputs {
 p#spreadSpeedOutput {
     display: inline;
 }
-input {
-    color: red;
+div.io {
+    display: block;
+    margin: 10px;
 }
-input.input {
+input {
+    display: inline-block;
+    color: rgba(255, 0, 255, 75);
+}
+span {
     display: inline;
 }
