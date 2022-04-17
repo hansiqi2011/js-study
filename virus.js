@@ -1,12 +1,52 @@
+/**the setting number of people */
 const INIT_PEOPLE_NUMBER = 50;
+/**the size of the world */
 const WORLD_SIZE = 600;
-let recoverTime = 500;
+/**how long an infected people will be cured after being infected */
+const recoverTime = 500;
+/**how possible an infected person can infect an uninfected people */
 let infectionRatio = 0.01;
-let infetedPeopleNumber = 1;
+/**how many people are infected */
+let infectedPeopleNumber = 1;
+/**the population in the world */
 let population = [];
+/**context */
+const ctx = document.getElementById("infectionChart").getContext("2d");
+/**the chart which shows the infection */
+let infectionChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+        labels: ["感染人数"],
+        datasets: [
+            {
+                lable: "感染人数",
+                data: [infectedPeopleNumber],
+            },
+        ],
+    },
+    options: {
+        animation: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                suggestedMin: INIT_PEOPLE_NUMBER,
+                suggestedMax: INIT_PEOPLE_NUMBER,
+            },
+        },
+    },
+});
 
+/**
+ * random int
+ * @param {int} min the minimum number
+ * @param {int} max the maximum number
+ * @returns {int} a random int between min and max
+ */
 const randInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
-
+/**
+ * create the person
+ * @returns {object} a person
+ */
 const createPerson = () => ({
     x: randInt(0, WORLD_SIZE),
     y: randInt(0, WORLD_SIZE),
@@ -16,6 +56,10 @@ const createPerson = () => ({
     healthLevel: recoverTime,
     hasAntibody: false,
 });
+/**
+ * create a population in the world
+ * @returns the created population
+ */
 function createPopulation() {
     let population = [];
     for (let index = 0; index < INIT_PEOPLE_NUMBER; index++) {
@@ -25,8 +69,8 @@ function createPopulation() {
 }
 
 /**
- * 感染一个人，让他成为阳性，健康值降为0，并拥有抗体
- * @param person 被感染的人
+ * infect a person: make his health level become 0, let him be positive and give him an antibody
+ * @param {object} person the people to infect
  */
 function infect(person) {
     person.isPositive = true;
@@ -34,6 +78,10 @@ function infect(person) {
     person.healthLevel = 0;
 }
 
+/**
+ * update a person's poosition
+ * @param {object} person the person to move
+ */
 function randomWalk(person) {
     if (Math.random() < 0.01) {
         person.xs = randInt(-2, 2);
@@ -44,6 +92,10 @@ function randomWalk(person) {
     if (person.x <= 0 || person.x >= WORLD_SIZE) person.xs *= -1;
     if (person.y <= 0 || person.y >= WORLD_SIZE) person.ys *= -1;
 }
+/**
+ * recover the person
+ * @param {object} person person
+ */
 function recover(person) {
     //TODO: 有几率死亡
     if (person.healthLevel < recoverTime) {
@@ -51,46 +103,90 @@ function recover(person) {
     } else person.isPositive = false;
 }
 
-function closeEnough(p1, p2) {
-    return dist(p1.x, p1.y, p2.x, p2.y) < 30;
-}
-const checkInfection = (targetPerson, sourcePerson) => {
-    return (
-        targetPerson !== sourcePerson &&
-        closeEnough(targetPerson, sourcePerson) &&
-        sourcePerson.isPositive &&
-        !targetPerson.hasAntibody &&
-        Math.random() <= infectionRatio
-    );
-};
+/**
+ * check the distance betwee p1 and p2
+ * @param {object} p1 person one
+ * @param {object} p2 person two
+ * @returns {Boolean} whether p1 and p2 are close enough
+ */
+const closeEnough = (p1, p2) => dist(p1.x, p1.y, p2.x, p2.y) < 30;
+/**
+ * judge whether one in the two people should be infected
+ * @param {object} targetPerson the first person to check
+ * @param {object} sourcePerson the second person to check
+ * @returns {Boolean} if target person should be infected
+ */
+const checkInfection = (targetPerson, sourcePerson) =>
+    targetPerson !== sourcePerson &&
+    closeEnough(targetPerson, sourcePerson) &&
+    sourcePerson.isPositive &&
+    !targetPerson.hasAntibody &&
+    Math.random() <= infectionRatio;
 
+/**
+ * create the population and let a person be infected
+ */
 function initWorld() {
     population = createPopulation();
     infect(population[0]);
 }
+/**
+ * the set up function for the p5 library
+ */
 function setup() {
-    createCanvas(WORLD_SIZE, WORLD_SIZE);
+    let c = createCanvas(WORLD_SIZE, WORLD_SIZE);
+    c.parent("sim");
+    frameRate(60);
     background("#000000");
     noStroke();
     initWorld();
 }
 
+/**
+ * draw the person
+ * @param {object} person person
+ */
 function drawPerson(person) {
     if (person.isPositive) fill("#f00");
     else if (person.hasAntibody) fill("#00f");
     else fill("#0f0");
     ellipse(person.x, person.y, 10);
 }
+/**
+ *
+ */
 function showInfection() {
     document.getElementById("infectionOutput").innerHTML =
         "infected people number: " +
-        str(infetedPeopleNumber) +
+        str(infectedPeopleNumber) +
         "/" +
         str(INIT_PEOPLE_NUMBER);
 }
 
+function buildChartData() {
+    return {
+        labels: ["感染人数"],
+        datasets: [
+            {
+                lable: "感染人数",
+                data: [infectedPeopleNumber],
+            },
+        ],
+    };
+}
+
+function calculatePositiveCount(persons) {
+    let currentTotal = persons.reduce((total, person) => {
+        return person.isPositive ? total + 1 : total;
+    }, 0);
+    if (infectedPeopleNumber !== currentTotal) {
+        infectionChart.data = buildChartData();
+        infectionChart.update();
+    }
+    infectedPeopleNumber = currentTotal;
+}
+
 function draw() {
-    infetedPeopleNumber = 0;
     fill(0);
     rect(0, 0, WORLD_SIZE, WORLD_SIZE);
     population.forEach((person) => {
@@ -100,9 +196,11 @@ function draw() {
             if (checkInfection(person, otherPerson)) infect(person);
         });
         drawPerson(person);
-        if (person.isPositive) infetedPeopleNumber++;
+        // if (person.isPositive) infectedPeopleNumber++;
     });
+    calculatePositiveCount(population);
     showInfection();
+    // infectionChart.data.labels.push("infectedPeopleNumber");
 }
 
 function onInfectionRatioChange() {
