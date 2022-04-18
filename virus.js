@@ -10,32 +10,14 @@ let infectionRatio = 0.01;
 let infectedPeopleNumber = 1;
 /**the population in the world */
 let population = [];
+/**count down for changing the chart */
+let changeChartCount = 60;
 /**context */
 const ctx = document.getElementById("infectionChart").getContext("2d");
-/**the chart which shows the infection */
-let infectionChart = new Chart(ctx, {
-    type: "bar",
-    data: {
-        labels: ["感染人数"],
-        datasets: [
-            {
-                lable: "感染人数",
-                data: [infectedPeopleNumber],
-            },
-        ],
-    },
-    options: {
-        animation: false,
-        scales: {
-            y: {
-                beginAtZero: true,
-                suggestedMin: INIT_PEOPLE_NUMBER,
-                suggestedMax: INIT_PEOPLE_NUMBER,
-            },
-        },
-    },
-});
-
+ctx.beginPath();
+ctx.lineWidth = 2;
+ctx.fillStyle = "#333";
+let chartData = [];
 /**
  * random int
  * @param {int} min the minimum number
@@ -153,6 +135,29 @@ function drawPerson(person) {
     ellipse(person.x, person.y, 10);
 }
 /**
+ * draw the chart
+ * @param {Array} data the data of the chart
+ * @param {int} width
+ * @param {int} intervalWidth
+ * @param {int} width
+ */
+function drawChart(data, width, intervalWidth, intervalHeight) {
+    ctx.clearRect(0, 0, ctx.width, ctx.height);
+    const len = data.length;
+    if (width / intervalWidth < len) {
+        data.shift();
+    }
+    data.push(infectedPeopleNumber);
+    for (let i = 0; i < len - 2; i++) {
+        ctx.moveTo(i * intervalWidth, WORLD_SIZE - intervalHeight * data[i]);
+        ctx.lineTo(
+            (i + 1) * intervalWidth,
+            WORLD_SIZE - intervalHeight * data[i + 1]
+        );
+        ctx.stroke();
+    }
+}
+/**
  *
  */
 function showInfection() {
@@ -163,26 +168,10 @@ function showInfection() {
         str(INIT_PEOPLE_NUMBER);
 }
 
-function buildChartData() {
-    return {
-        labels: ["感染人数"],
-        datasets: [
-            {
-                lable: "感染人数",
-                data: [infectedPeopleNumber],
-            },
-        ],
-    };
-}
-
 function calculatePositiveCount(persons) {
     let currentTotal = persons.reduce((total, person) => {
         return person.isPositive ? total + 1 : total;
     }, 0);
-    if (infectedPeopleNumber !== currentTotal) {
-        infectionChart.data = buildChartData();
-        infectionChart.update();
-    }
     infectedPeopleNumber = currentTotal;
 }
 
@@ -196,11 +185,13 @@ function draw() {
             if (checkInfection(person, otherPerson)) infect(person);
         });
         drawPerson(person);
-        // if (person.isPositive) infectedPeopleNumber++;
     });
     calculatePositiveCount(population);
     showInfection();
-    // infectionChart.data.labels.push("infectedPeopleNumber");
+    if (changeChartCount-- === 0) {
+        drawChart(chartData, WORLD_SIZE, 10, 12);
+        changeChartCount = 60;
+    }
 }
 
 function onInfectionRatioChange() {

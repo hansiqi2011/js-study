@@ -18,6 +18,11 @@ input {
 span {
     display: inline;
 }
-canvas {
-    display: inline;
+
+div#sim {
+    display: inline-block;
+}
+
+canvas#infectionChart {
+    display: inline-block;
 }
