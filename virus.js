@@ -10,8 +10,9 @@ let infectionRatio = 0.01;
 let infectedPeopleNumber = 1;
 /**the population in the world */
 let population = [];
-/**count down for changing the chart */
-let changeChartCount = 15;
+const redrawFrameRate = 60;
+/**count down for redraw the chart */
+let redrawCount = 0;
 /**context */
 let count = 0;
 const ctx = document.getElementById("infectionChart").getContext("2d");
@@ -182,12 +183,8 @@ function calculatePositiveCount(persons) {
     let currentTotal = persons.reduce((total, person) => {
         return person.isPositive ? total + 1 : total;
     }, 0);
-    if (infectedPeopleNumber !== currentTotal) {
-        buildChartData(infectionChart.data.datasets[0].data);
-        infectionChart.data.labels.push(String(count));
-        infectionChart.update();
-    }
     infectedPeopleNumber = currentTotal;
+    redrawChart();
 }
 
 function draw() {
@@ -203,10 +200,6 @@ function draw() {
     });
     calculatePositiveCount(population);
     showInfection();
-    // if (changeChartCount-- === 0) {
-    //     drawChart(chartData, WORLD_SIZE, 10, 12);
-    //     changeChartCount = 15;
-    // }
 }
 
 function onInfectionRatioChange() {
@@ -221,4 +214,17 @@ function addPositive() {
 
 function buildChartData(data = []) {
     data.push(infectedPeopleNumber);
+}
+
+function simulationComplete() {
+    //TODO: complete simulation and stop redraw chart
+}
+
+function redrawChart() {
+    if (redrawCount++ >= redrawFrameRate) {
+        buildChartData(infectionChart.data.datasets[0].data);
+        infectionChart.data.labels.push(String(count));
+        infectionChart.update();
+        redrawCount = 0;
+    }
 }
