@@ -15,14 +15,17 @@ input {
     display: inline-block;
     color: rgba(255, 0, 255, 75);
 }
-span {
-    display: inline;
-}
 
 div#sim {
     display: inline-block;
 }
-
-canvas#infectionChart {
+div#chart {
     display: inline-block;
+    margin-left: 50px;
+}
+div.switch {
+    border: 2px;
+    border-color: blue;
+    width: 40px;
+    height: 20px;
 }
