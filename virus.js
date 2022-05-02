@@ -247,6 +247,11 @@ function onVaccinateRatioChange() {
     document.getElementById("vaccinateRatioOutput").innerHTML =
         str(Math.round(vaccinateRatio * 100)) + "%";
 }
+function onVERchange() {
+    vaccineEffectiveRatio = document.getElementById("VER").value;
+    document.getElementById("VERoutput").innerHTML =
+        str(Math.round(vaccineEffectiveRatio * 100)) + "%";
+}
 function addPositive() {
     let unluckyPerson = population[randInt(1, INIT_PEOPLE_NUMBER)];
     infect(unluckyPerson);

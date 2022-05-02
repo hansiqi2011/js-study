@@ -42,6 +42,19 @@
                 <span id="vaccinateRatioOutput">50%</span>
             </div>
             <div class="io">
+                <span>vaccine effective ratio: </span>
+                <input
+                    type="range"
+                    id="VER"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="0.8"
+                    onchange="onVERchange()"
+                > </input>
+                <span id="VERoutput">80%</span>
+            </div>
+            <div class="io">
                 <span id="infectionOutput"></span>
                 <input type="button" value="add positive" id="addPositive" onclick="addPositive()" />
             </div>
