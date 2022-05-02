@@ -16,6 +16,7 @@
                 <input type="button" value="show record" id="showRecord" onclick="showRecord()" >
             </div>
             <div class="io">
+                <span>infection ratio: </span>
                 <input
                     type="range"
                     id="infectionRatio"
@@ -26,6 +27,19 @@
                     onchange="onInfectionRatioChange()"
                 > </input>
                 <span id="infectionRatioOutput">1%</span>
+            </div>
+            <div class="io">
+                <span>vaccination ratio: </span>
+                <input
+                    type="range"
+                    id="vaccinateRatio"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="0.5"
+                    onchange="onVaccinateRatioChange()"
+                />
+                <span id="vaccinateRatioOutput">50%</span>
             </div>
             <div class="io">
                 <span id="infectionOutput"></span>

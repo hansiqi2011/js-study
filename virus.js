@@ -19,6 +19,7 @@ const ctx = document.getElementById("infectionChart").getContext("2d");
 /**time(s) */
 let count = 0;
 let continueDrawing = true;
+let vaccinateRatio = 0.5;
 let infectionChart = new Chart(ctx, {
     type: "line",
     data: {
@@ -76,7 +77,7 @@ const createPerson = () => ({
     isPositive: false,
     healthLevel: recoverTime,
     hasAntibody: false,
-    isVaccinated: Math.random() < 0.5,
+    isVaccinated: Math.random() <= vaccinateRatio,
 });
 /**
  * create a population in the world
@@ -173,7 +174,7 @@ function setup() {
 function drawPerson(person) {
     if (person.isPositive) fill("#f00");
     else if (person.hasAntibody) fill("#00f");
-    else if (person.isVaccinated) fill("#ff0");
+    else if (person.isVaccinated) fill("#fb0");
     else fill("#0f0");
     ellipse(person.x, person.y, 10);
 }
@@ -234,6 +235,11 @@ function onInfectionRatioChange() {
         str(Math.round(infectionRatio * 100)) + "%";
     infectionChart.data.labels[infectionChart.data.labels.length - 1] =
         "!(" + str(count) + ")";
+}
+function onVaccinateRatioChange() {
+    vaccinateRatio = document.getElementById("vaccinateRatio").value;
+    document.getElementById("vaccinateRatioOutput").innerHTML =
+        str(Math.round(vaccinateRatio * 100)) + "%";
 }
 function addPositive() {
     let unluckyPerson = population[randInt(1, INIT_PEOPLE_NUMBER)];
