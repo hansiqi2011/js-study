@@ -76,7 +76,7 @@ const createPerson = () => ({
     isPositive: false,
     healthLevel: recoverTime,
     hasAntibody: false,
-    isVaccinated: false,
+    isVaccinated: Math.random() < 0.5,
 });
 /**
  * create a population in the world
@@ -142,6 +142,7 @@ const checkInfection = (targetPerson, sourcePerson) =>
     closeEnough(targetPerson, sourcePerson) &&
     sourcePerson.isPositive &&
     !targetPerson.hasAntibody &&
+    (Math.random() <= targetPerson.isVaccinated ? 0.2 : 1) &&
     Math.random() <= infectionRatio;
 
 /**
@@ -172,6 +173,7 @@ function setup() {
 function drawPerson(person) {
     if (person.isPositive) fill("#f00");
     else if (person.hasAntibody) fill("#00f");
+    else if (person.isVaccinated) fill("#ff0");
     else fill("#0f0");
     ellipse(person.x, person.y, 10);
 }
