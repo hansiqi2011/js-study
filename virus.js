@@ -9,7 +9,7 @@ let infectionRatio = 0.01;
 /**how many people are infected */
 let infectionCount = 1;
 let antibodyCount = 0;
-/**the population in the world */
+/**the population in the world*/
 let population = [];
 const redrawFrameRate = 30;
 /**count down for redraw the chart */
@@ -34,8 +34,8 @@ let infectionChart = new Chart(ctx, {
             {
                 label: "how many people cured",
                 data: [],
-                backgroundColor: ["rgba(31, 245, 239, 0.6)"],
-                borderColor: ["rgba(31, 127, 255, 0.5)"],
+                backgroundColor: ["rgba(31, 255, 127, 0.5)"],
+                borderColor: ["rgba(0, 223, 31, 1)"],
                 borderWidth: 2,
             },
         ],
@@ -76,6 +76,7 @@ const createPerson = () => ({
     isPositive: false,
     healthLevel: recoverTime,
     hasAntibody: false,
+    isVaccinated: false,
 });
 /**
  * create a population in the world
@@ -104,7 +105,7 @@ function infect(person) {
  * @param {object} person the person to move
  */
 function randomWalk(person) {
-    if (Math.random() < 0.01) {
+    if (Math.random() < 0.02) {
         person.xs = randInt(-2, 2);
         person.ys = randInt(-2, 2);
     }
@@ -150,6 +151,7 @@ function initWorld() {
     population = createPopulation();
     infect(population[0]);
     clearChart();
+    record = [];
 }
 /**
  * the set up function for the p5 library
@@ -206,7 +208,7 @@ function calculatePositiveCount(persons) {
     });
     infectionCount = currentTotal_i;
     antibodyCount = currentTotal_a;
-    if (continueDrawing) redrawChart();
+    redrawChart();
 }
 
 function draw() {
@@ -228,16 +230,25 @@ function onInfectionRatioChange() {
     infectionRatio = document.getElementById("infectionRatio").value;
     document.getElementById("infectionRatioOutput").innerHTML =
         str(Math.round(infectionRatio * 100)) + "%";
+    infectionChart.data.labels[infectionChart.data.labels.length - 1] =
+        "!(" + str(count) + ")";
 }
 function addPositive() {
     let unluckyPerson = population[randInt(1, INIT_PEOPLE_NUMBER)];
     infect(unluckyPerson);
 }
 function simulationCompleted() {
+    tmpc = continueDrawing;
     continueDrawing = infectionCount !== 0;
+    if (tmpc !== continueDrawing) {
+        infectionChart.data.labels.push("ENDr");
+        infectionChart.data.datasets[0].data.push(0);
+        infectionChart.data.datasets[1].data.push(antibodyCount);
+        infectionChart.update();
+    }
 }
 function redrawChart() {
-    if (redrawCount++ >= redrawFrameRate) {
+    if (redrawCount++ >= redrawFrameRate && continueDrawing) {
         count++;
         infectionChart.data.datasets[0].data.push(infectionCount);
         infectionChart.data.datasets[1].data.push(antibodyCount);
@@ -249,7 +260,7 @@ function redrawChart() {
 function clearChart() {
     infectionChart.data.labels = [];
     infectionChart.data.datasets.data = [];
-    count = 0;
+    count = -1;
 }
 function showRecord() {
     if (record.length !== 0) alert(record.join(", "));
