@@ -27,5 +27,6 @@ div.switch {
     border: 2px;
     border-color: blue;
     width: 40px;
+    background-color: b;
     height: 20px;
 }

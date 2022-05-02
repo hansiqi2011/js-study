@@ -7,30 +7,46 @@ const recoverTime = 500;
 /**how possible an infected person can infect an uninfected people */
 let infectionRatio = 0.01;
 /**how many people are infected */
-let infectedPeopleNumber = 1;
+let infectionCount = 1;
+let antibodyCount = 0;
 /**the population in the world */
 let population = [];
-const redrawFrameRate = 60;
+const redrawFrameRate = 30;
 /**count down for redraw the chart */
 let redrawCount = 0;
 /**context */
-let count = 0;
 const ctx = document.getElementById("infectionChart").getContext("2d");
-let chartData = [];
+/**time(s) */
+let count = 0;
+let continueDrawing = true;
 let infectionChart = new Chart(ctx, {
     type: "line",
     data: {
-        labels: ["0"],
+        labels: [],
         datasets: [
             {
-                label: "how many peoples infected",
-                data: [infectedPeopleNumber],
+                label: "how many people infected",
+                data: [],
+                backgroundColor: ["rgba(239, 31, 31, 0.2)"],
+                borderColor: ["rgba(255, 0, 0, 0.5)"],
+                borderWidth: 2,
+            },
+            {
+                label: "how many people cured",
+                data: [],
+                backgroundColor: ["rgba(31, 245, 239, 0.6)"],
+                borderColor: ["rgba(31, 127, 255, 0.5)"],
+                borderWidth: 2,
             },
         ],
     },
     options: {
-        animation: false,
-        responsive: false,
+        animations: false,
+        transitions: {
+            show: { animations: { x: { from: 0 }, y: { from: 0 } } },
+            hide: { animations: { x: { to: 0 }, y: { to: 0 } } },
+            responsive: false,
+        },
         scales: {
             y: {
                 beginAtZero: true,
@@ -40,6 +56,7 @@ let infectionChart = new Chart(ctx, {
         },
     },
 });
+let record = [];
 /**
  * random int
  * @param {int} min the minimum number
@@ -102,9 +119,8 @@ function randomWalk(person) {
  */
 function recover(person) {
     //TODO: 有几率死亡
-    if (person.healthLevel < recoverTime) {
-        person.healthLevel++;
-    } else person.isPositive = false;
+    if (person.healthLevel < recoverTime) person.healthLevel++;
+    else person.isPositive = false;
 }
 
 /**
@@ -133,13 +149,14 @@ const checkInfection = (targetPerson, sourcePerson) =>
 function initWorld() {
     population = createPopulation();
     infect(population[0]);
+    clearChart();
 }
 /**
  * the set up function for the p5 library
  */
 function setup() {
-    let c = createCanvas(WORLD_SIZE, WORLD_SIZE);
-    c.parent("sim");
+    let world = createCanvas(WORLD_SIZE, WORLD_SIZE);
+    world.parent("sim");
     frameRate(60);
     background("#000000");
     noStroke();
@@ -169,22 +186,27 @@ function drawPerson(person) {
 function showInfection() {
     document.getElementById("infectionOutput").innerHTML =
         "infected people number: " +
-        str(infectedPeopleNumber) +
+        str(infectionCount) +
         "/" +
         str(INIT_PEOPLE_NUMBER);
 }
 
 function calculatePositiveCount(persons) {
-    count++;
+    simulationCompleted();
     if (infectionChart.data.labels.length > 40) {
         infectionChart.data.labels.shift();
-        infectionChart.data.datasets[0].data.shift();
+        record.push(infectionChart.data.datasets[0].data.shift());
+        infectionChart.data.datasets[1].data.shift();
     }
-    let currentTotal = persons.reduce((total, person) => {
-        return person.isPositive ? total + 1 : total;
-    }, 0);
-    infectedPeopleNumber = currentTotal;
-    redrawChart();
+    let currentTotal_i = 0;
+    let currentTotal_a = 0;
+    persons.forEach((person) => {
+        if (person.isPositive) currentTotal_i++;
+        else if (person.hasAntibody) currentTotal_a++;
+    });
+    infectionCount = currentTotal_i;
+    antibodyCount = currentTotal_a;
+    if (continueDrawing) redrawChart();
 }
 
 function draw() {
@@ -211,20 +233,24 @@ function addPositive() {
     let unluckyPerson = population[randInt(1, INIT_PEOPLE_NUMBER)];
     infect(unluckyPerson);
 }
-
-function buildChartData(data = []) {
-    data.push(infectedPeopleNumber);
+function simulationCompleted() {
+    continueDrawing = infectionCount !== 0;
 }
-
-function simulationComplete() {
-    //TODO: complete simulation and stop redraw chart
-}
-
 function redrawChart() {
     if (redrawCount++ >= redrawFrameRate) {
-        buildChartData(infectionChart.data.datasets[0].data);
+        count++;
+        infectionChart.data.datasets[0].data.push(infectionCount);
+        infectionChart.data.datasets[1].data.push(antibodyCount);
         infectionChart.data.labels.push(String(count));
         infectionChart.update();
         redrawCount = 0;
     }
+}
+function clearChart() {
+    infectionChart.data.labels = [];
+    infectionChart.data.datasets.data = [];
+    count = 0;
+}
+function showRecord() {
+    if (record.length !== 0) alert(record.join(", "));
 }
