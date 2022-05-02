@@ -14,51 +14,58 @@ let population = [];
 const redrawFrameRate = 30;
 /**count down for redraw the chart */
 let redrawCount = 0;
-/**context */
-const ctx = document.getElementById("infectionChart").getContext("2d");
+
 /**time(s) */
 let count = 0;
 let continueDrawing = true;
 let vaccinateRatio = 0.5;
 let vaccineEffectiveRatio = 0.8;
-let infectionChart = new Chart(ctx, {
-    type: "line",
-    data: {
-        labels: [],
-        datasets: [
-            {
-                label: "how many people infected",
-                data: [],
-                backgroundColor: ["rgba(239, 31, 31, 0.2)"],
-                borderColor: ["rgba(255, 0, 0, 0.5)"],
-                borderWidth: 2,
-            },
-            {
-                label: "how many people cured",
-                data: [],
-                backgroundColor: ["rgba(31, 255, 127, 0.5)"],
-                borderColor: ["rgba(0, 223, 31, 1)"],
-                borderWidth: 2,
-            },
-        ],
-    },
-    options: {
-        animations: false,
-        transitions: {
-            show: { animations: { x: { from: 0 }, y: { from: 0 } } },
-            hide: { animations: { x: { to: 0 }, y: { to: 0 } } },
-            responsive: false,
+let infectionChart;
+let record;
+
+function createChart(ctx) {
+    infectionChart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: "how many people infected",
+                    data: [],
+                    backgroundColor: ["rgba(239, 31, 31, 0.2)"],
+                    borderColor: ["rgba(255, 0, 0, 0.5)"],
+                    borderWidth: 2,
+                },
+                {
+                    label: "how many people cured",
+                    data: [],
+                    backgroundColor: ["rgba(31, 255, 127, 0.5)"],
+                    borderColor: ["rgba(0, 223, 31, 1)"],
+                    borderWidth: 2,
+                },
+            ],
         },
-        scales: {
-            y: {
-                beginAtZero: true,
-                suggestedMin: INIT_PEOPLE_NUMBER,
-                suggestedMax: INIT_PEOPLE_NUMBER,
+        options: {
+            animations: false,
+            transitions: {
+                show: { animations: { x: { from: 0 }, y: { from: 0 } } },
+                hide: { animations: { x: { to: 0 }, y: { to: 0 } } },
+                responsive: false,
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    suggestedMin: INIT_PEOPLE_NUMBER,
+                    suggestedMax: INIT_PEOPLE_NUMBER,
+                },
             },
         },
-    },
-});
-let record = [];
+    });
+}
+/**context */
+const ctx = document.getElementById("infectionChart").getContext("2d");
+createChart(ctx);
+
 /**
  * random int
  * @param {int} min the minimum number
@@ -210,14 +217,8 @@ function countInfected(population) {
 
 function calculatePositiveCount(persons) {
     simulationCompleted();
-    if (infectionChart.data.labels.length > 40) {
-        infectionChart.data.labels.shift();
-        record.push(infectionChart.data.datasets[0].data.shift());
-        infectionChart.data.datasets[1].data.shift();
-    }
     infectionCount = countInfected(persons);
     antibodyCount = countCured(persons);
-    redrawChart();
 }
 
 function draw() {
@@ -257,17 +258,14 @@ function addPositive() {
     infect(unluckyPerson);
 }
 function simulationCompleted() {
-    tmpc = continueDrawing;
-    continueDrawing = infectionCount !== 0;
-    if (tmpc !== continueDrawing) {
-        infectionChart.data.labels.push("ENDr");
-        infectionChart.data.datasets[0].data.push(0);
-        infectionChart.data.datasets[1].data.push(antibodyCount);
-        infectionChart.update();
-    }
+    const d = infectionChart.data.datasets[0].data;
+    continueDrawing = !(infectionCount === 0 && d[d.length - 1] === 0);
+    // tmpc = continueDrawing;
+    // continueDrawing = infectionCount == 0;
+    if (continueDrawing) redrawChart();
 }
 function redrawChart() {
-    if (redrawCount++ >= redrawFrameRate && continueDrawing) {
+    if (redrawCount++ >= redrawFrameRate) {
         count++;
         infectionChart.data.datasets[0].data.push(infectionCount);
         infectionChart.data.datasets[1].data.push(antibodyCount);
@@ -278,7 +276,8 @@ function redrawChart() {
 }
 function clearChart() {
     infectionChart.data.labels = [];
-    infectionChart.data.datasets.data = [];
+    infectionChart.data.datasets[0].data = [];
+    infectionChart.data.datasets[1].data = [];
     count = -1;
 }
 function showRecord() {
