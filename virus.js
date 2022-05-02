@@ -20,6 +20,7 @@ const ctx = document.getElementById("infectionChart").getContext("2d");
 let count = 0;
 let continueDrawing = true;
 let vaccinateRatio = 0.5;
+let vaccineEffectiveRatio = 0.8;
 let infectionChart = new Chart(ctx, {
     type: "line",
     data: {
@@ -143,7 +144,7 @@ const checkInfection = (targetPerson, sourcePerson) =>
     closeEnough(targetPerson, sourcePerson) &&
     sourcePerson.isPositive &&
     !targetPerson.hasAntibody &&
-    (Math.random() <= targetPerson.isVaccinated ? 0.2 : 1) &&
+    (Math.random() >= targetPerson.isVaccinated ? vaccineEffectiveRatio : 0) &&
     Math.random() <= infectionRatio;
 
 /**
@@ -164,7 +165,6 @@ function setup() {
     frameRate(60);
     background("#000000");
     noStroke();
-    initWorld();
 }
 
 /**
@@ -196,6 +196,18 @@ function showInfection() {
         str(INIT_PEOPLE_NUMBER);
 }
 
+function countCured(population) {
+    return population.reduce((result, person) => {
+        return !person.isPositive && person.hasAntibody ? result + 1 : result;
+    }, 0);
+}
+
+function countInfected(population) {
+    return population.reduce((result, person) => {
+        return person.isPositive ? result + 1 : result;
+    }, 0);
+}
+
 function calculatePositiveCount(persons) {
     simulationCompleted();
     if (infectionChart.data.labels.length > 40) {
@@ -203,14 +215,8 @@ function calculatePositiveCount(persons) {
         record.push(infectionChart.data.datasets[0].data.shift());
         infectionChart.data.datasets[1].data.shift();
     }
-    let currentTotal_i = 0;
-    let currentTotal_a = 0;
-    persons.forEach((person) => {
-        if (person.isPositive) currentTotal_i++;
-        else if (person.hasAntibody) currentTotal_a++;
-    });
-    infectionCount = currentTotal_i;
-    antibodyCount = currentTotal_a;
+    infectionCount = countInfected(persons);
+    antibodyCount = countCured(persons);
     redrawChart();
 }
 
