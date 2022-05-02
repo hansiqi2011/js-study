@@ -10,11 +10,10 @@
         <link rel="stylesheet" href="virus.css" />
     </head>
     <body>
-        <div class="switch"></div>
         <div id="inputs">
             <div class="io">
                 <input type="button" value="reset" onclick="initWorld()" />
-                <input type="button" value="show record" onclick="showRecord()" >
+                <input type="button" value="show record" id="showRecord" onclick="showRecord()" >
             </div>
             <div class="io">
                 <input
@@ -30,15 +29,13 @@
             </div>
             <div class="io">
                 <span id="infectionOutput"></span>
-                <input type="button" value="add positive" onclick="addPositive()" />
+                <input type="button" value="add positive" id="addPositive" onclick="addPositive()" />
             </div>
         </div>
         <div id="sim"></div>
-
-        <div id="chart">
+        <div id="chart" style="margin-left: 0px">
             <canvas id="infectionChart" width="600px" height="600px"></canvas>
         </div>
-
         <script src="virus.js"></script>
     </body>
 </html>

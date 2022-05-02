@@ -13,20 +13,18 @@ div.io {
 }
 input {
     display: inline-block;
-    color: rgba(255, 0, 255, 75);
+    font-size: 15px;
 }
-
+input#showRecord {
+    color: rgba(0, 0, 255, 0.75);
+}
+input#addPositive {
+    color: rgba(255, 0, 0, 1);
+}
 div#sim {
     display: inline-block;
 }
 div#chart {
     display: inline-block;
     margin-left: 50px;
-}
-div.switch {
-    border: 2px;
-    border-color: blue;
-    width: 40px;
-    background-color: b;
-    height: 20px;
 }
