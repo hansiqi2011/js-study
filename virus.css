@@ -10,16 +10,20 @@ p#spreadSpeedOutput {
 div.io {
     display: block;
     margin: 10px;
+    margin-left: 0px;
+    font-family: 微软雅黑;
+    font-size: 15px;
 }
 input {
     display: inline-block;
-    font-size: 15px;
+    border-radius: 5px;
+    border-width: 1px;
 }
-input#showRecord {
-    color: rgba(0, 0, 255, 0.75);
+input#reset {
+    color: rgba(0, 0, 255, 75%);
 }
 input#addPositive {
-    color: rgba(255, 0, 0, 1);
+    color: rgba(255, 0, 0, 100%);
 }
 div#sim {
     display: inline-block;
@@ -27,4 +31,9 @@ div#sim {
 div#chart {
     display: inline-block;
     margin-left: 50px;
+}
+select {
+    border-color: black;
+    background-color: lightgray;
+    border-radius: 5px;
 }

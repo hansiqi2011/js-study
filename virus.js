@@ -14,58 +14,86 @@ let population = [];
 const redrawFrameRate = 30;
 /**count down for redraw the chart */
 let redrawCount = 0;
-
 /**time(s) */
 let count = 0;
+/**whether the chart will be continue drawing */
 let continueDrawing = true;
 let vaccinateRatio = 0.5;
 let vaccineEffectiveRatio = 0.8;
-let infectionChart;
-let record;
-
-function createChart(ctx) {
-    infectionChart = new Chart(ctx, {
-        type: "line",
-        data: {
-            labels: [],
-            datasets: [
-                {
-                    label: "how many people infected",
-                    data: [],
-                    backgroundColor: ["rgba(239, 31, 31, 0.2)"],
-                    borderColor: ["rgba(255, 0, 0, 0.5)"],
-                    borderWidth: 2,
-                },
-                {
-                    label: "how many people cured",
-                    data: [],
-                    backgroundColor: ["rgba(31, 255, 127, 0.5)"],
-                    borderColor: ["rgba(0, 223, 31, 1)"],
-                    borderWidth: 2,
-                },
-            ],
-        },
-        options: {
-            animations: false,
-            transitions: {
-                show: { animations: { x: { from: 0 }, y: { from: 0 } } },
-                hide: { animations: { x: { to: 0 }, y: { to: 0 } } },
-                responsive: false,
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    suggestedMin: INIT_PEOPLE_NUMBER,
-                    suggestedMax: INIT_PEOPLE_NUMBER,
-                },
-            },
-        },
-    });
-}
+let infectionRange = 40;
+let vaccineUsed = false;
 /**context */
 const ctx = document.getElementById("infectionChart").getContext("2d");
-createChart(ctx);
-
+let infectionChart = new Chart(ctx, {
+    type: "line",
+    data: {
+        labels: [],
+        datasets: [
+            {
+                label: "how many people infected",
+                data: [],
+                backgroundColor: ["rgba(239, 31, 31, 0.2)"],
+                borderColor: ["rgba(255, 0, 0, 0.5)"],
+                borderWidth: 2,
+            },
+            {
+                label: "how many people cured",
+                data: [],
+                backgroundColor: ["rgba(31, 255, 127, 0.2)"],
+                borderColor: ["rgba(0, 223, 31, 0.5)"],
+                borderWidth: 2,
+            },
+        ],
+    },
+    options: {
+        animations: false,
+        transitions: {
+            show: { animations: { x: { from: 0 }, y: { from: 0 } } },
+            hide: { animations: { x: { to: 0 }, y: { to: 0 } } },
+            responsive: false,
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                suggestedMin: INIT_PEOPLE_NUMBER,
+                suggestedMax: INIT_PEOPLE_NUMBER,
+            },
+        },
+    },
+});
+let langMode;
+let languages = {
+    eng: [
+        "select language mode: ",
+        "reset/start",
+        "infection ratio: ",
+        "distance for infecting: ",
+        "use vaccine",
+        "vaccination ratio: ",
+        "vaccine effective ratio: ",
+        "infected people number: ",
+        "add positive",
+        "virus mocker",
+        "how many people infected",
+        "how many people cured",
+    ],
+    "sim-chn": [
+        "选择语言：",
+        "重新开始模拟/开始模拟",
+        "感染率：",
+        "感染所需距离：",
+        "是否使用疫苗",
+        "疫苗接种率：",
+        "疫苗有效率：",
+        "感染人数：",
+        "增加感染者（病例）",
+        "病毒传染模拟器",
+        "感染人数",
+        "治愈人数",
+    ],
+};
+let started = false;
+const getid = (id) => document.getElementById(id);
 /**
  * random int
  * @param {int} min the minimum number
@@ -85,7 +113,7 @@ const createPerson = () => ({
     isPositive: false,
     healthLevel: recoverTime,
     hasAntibody: false,
-    isVaccinated: Math.random() <= vaccinateRatio,
+    isVaccinated: Math.random() < vaccinateRatio && vaccineUsed,
 });
 /**
  * create a population in the world
@@ -139,7 +167,7 @@ function recover(person) {
  * @param {object} p2 person two
  * @returns {Boolean} whether p1 and p2 are close enough
  */
-const closeEnough = (p1, p2) => dist(p1.x, p1.y, p2.x, p2.y) < 30;
+const closeEnough = (p1, p2) => dist(p1.x, p1.y, p2.x, p2.y) < infectionRange;
 /**
  * judge whether one in the two people should be infected
  * @param {object} targetPerson the first person to check
@@ -161,7 +189,7 @@ function initWorld() {
     population = createPopulation();
     infect(population[0]);
     clearChart();
-    record = [];
+    started = true;
 }
 /**
  * the set up function for the p5 library
@@ -185,24 +213,22 @@ function drawPerson(person) {
     else fill("#0f0");
     ellipse(person.x, person.y, 10);
 }
-/**
- * draw the chart
- * @param {Array} data the data of the chart
- * @param {int} width
- * @param {int} intervalWidth
- * @param {int} width
- */
+
 /**
  * show the infection by a number on the web pege
  */
 function showInfection() {
-    document.getElementById("infectionOutput").innerHTML =
-        "infected people number: " +
+    getid("infectionOutput").innerHTML =
+        languages[langMode][7] +
         str(infectionCount) +
         "/" +
         str(INIT_PEOPLE_NUMBER);
 }
-
+/**
+ *
+ * @param {object[]} population
+ * @returns
+ */
 function countCured(population) {
     return population.reduce((result, person) => {
         return !person.isPositive && person.hasAntibody ? result + 1 : result;
@@ -222,6 +248,9 @@ function calculatePositiveCount(persons) {
 }
 
 function draw() {
+    let tmp = langMode;
+    langMode = getid("langSelect").value;
+    if (tmp !== langMode) setPageLang(langMode);
     fill(0);
     rect(0, 0, WORLD_SIZE, WORLD_SIZE);
     population.forEach((person) => {
@@ -237,31 +266,28 @@ function draw() {
 }
 
 function onInfectionRatioChange() {
-    infectionRatio = document.getElementById("infectionRatio").value;
-    document.getElementById("infectionRatioOutput").innerHTML =
+    infectionRatio = getid("infectionRatio").value;
+    getid("infectionRatioOutput").innerHTML =
         str(Math.round(infectionRatio * 100)) + "%";
     infectionChart.data.labels[infectionChart.data.labels.length - 1] =
         "!(" + str(count) + ")";
 }
 function onVaccinateRatioChange() {
-    vaccinateRatio = document.getElementById("vaccinateRatio").value;
-    document.getElementById("vaccinateRatioOutput").innerHTML =
+    vaccinateRatio = getid("vaccinateRatio").value;
+    getid("vaccinateRatioOutput").innerHTML =
         str(Math.round(vaccinateRatio * 100)) + "%";
 }
 function onVERchange() {
-    vaccineEffectiveRatio = document.getElementById("VER").value;
-    document.getElementById("VERoutput").innerHTML =
+    vaccineEffectiveRatio = getid("VER").value;
+    getid("VERoutput").innerHTML =
         str(Math.round(vaccineEffectiveRatio * 100)) + "%";
 }
 function addPositive() {
-    let unluckyPerson = population[randInt(1, INIT_PEOPLE_NUMBER)];
-    infect(unluckyPerson);
+    if (started) infect(population[randInt(1, INIT_PEOPLE_NUMBER)]);
 }
 function simulationCompleted() {
     const d = infectionChart.data.datasets[0].data;
     continueDrawing = !(infectionCount === 0 && d[d.length - 1] === 0);
-    // tmpc = continueDrawing;
-    // continueDrawing = infectionCount == 0;
     if (continueDrawing) redrawChart();
 }
 function redrawChart() {
@@ -280,6 +306,25 @@ function clearChart() {
     infectionChart.data.datasets[1].data = [];
     count = -1;
 }
-function showRecord() {
-    if (record.length !== 0) alert(record.join(", "));
+function setPageLang(language) {
+    getid("slm").innerHTML = languages[language][0];
+    document.getElementById("reset").innerHTML = languages[language][1];
+    getid("ir").innerHTML = languages[language][2];
+    getid("irg").innerHTML = languages[language][3];
+    getid("vs").innerHTML = languages[language][4];
+    getid("vr").innerHTML = languages[language][5];
+    getid("ver").innerHTML = languages[language][6];
+    getid("addPositive").innerHTML = languages[language][8];
+    getid("title").innerHTML = languages[language][9];
+    infectionChart.data.datasets[0].label = languages[language][10];
+    infectionChart.data.datasets[1].label = languages[language][11];
+    infectionChart.update();
+}
+function onInfectionRangeChange() {
+    infectionRange = getid("infectionRange").value;
+    getid("infectionRangeOutput").innerHTML = infectionRange;
+}
+function switchVaccine() {
+    vaccineUsed = getid("vaccineSwitch").checked;
+    getid("vaccinateRatio").disabled = getid("VER").disabled = !vaccineUsed;
 }
