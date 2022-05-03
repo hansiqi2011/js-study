@@ -308,13 +308,13 @@ function clearChart() {
 }
 function setPageLang(language) {
     getid("slm").innerHTML = languages[language][0];
-    document.getElementById("reset").innerHTML = languages[language][1];
+    document.getElementById("reset").value = languages[language][1];
     getid("ir").innerHTML = languages[language][2];
     getid("irg").innerHTML = languages[language][3];
     getid("vs").innerHTML = languages[language][4];
     getid("vr").innerHTML = languages[language][5];
     getid("ver").innerHTML = languages[language][6];
-    getid("addPositive").innerHTML = languages[language][8];
+    getid("addPositive").value = languages[language][8];
     getid("title").innerHTML = languages[language][9];
     infectionChart.data.datasets[0].label = languages[language][10];
     infectionChart.data.datasets[1].label = languages[language][11];
