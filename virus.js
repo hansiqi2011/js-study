@@ -1,5 +1,5 @@
 /**the setting number of people */
-const INIT_PEOPLE_NUMBER = 50;
+const INIT_PEOPLE_NUMBER = 100;
 /**the size of the world */
 const WORLD_SIZE = 600;
 /**how long an infected people will be cured after being infected */
@@ -307,6 +307,10 @@ function onVERchange() {
     getid("VERoutput").innerHTML =
         str(Math.round(vaccineEffectiveRatio * 100)) + "%";
 }
+function onInfectionRangeChange() {
+    infectionRange = getid("infectionRange").value;
+    getid("infectionRangeOutput").innerHTML = infectionRange;
+}
 function addPositive() {
     if (started) infect(population[randInt(1, INIT_PEOPLE_NUMBER)]);
 }
@@ -353,10 +357,6 @@ function setPageLang() {
     getid("covid19delta").innerHTML = languages[langMode][18];
     getid("covid19omicron").innerHTML = languages[langMode][19];
 }
-function onInfectionRangeChange() {
-    infectionRange = getid("infectionRange").value;
-    getid("infectionRangeOutput").innerHTML = infectionRange;
-}
 function switchVaccine() {
     vaccineUsed = getid("vaccineSwitch").checked;
     getid("vaccinateRatio").disabled = getid("VER").disabled = !vaccineUsed;
@@ -366,6 +366,11 @@ function selectVirus() {
     getid("infectionRange").disabled = getid("infectionRatio").disabled =
         !customizate;
     if (!customizate) {
-        infectionRatio = r0s[getid("virusSelect").value] / 50;
+        getid("infectionRatio").value = infectionRatio =
+            r0s[getid("virusSelect").value] / 50;
+        getid("infectionRatioOutput").innerHTML =
+            str(Math.round(infectionRatio * 100)) + "%";
+        infectionChart.data.labels[infectionChart.data.labels.length - 1] =
+            str(count);
     }
 }
