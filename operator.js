@@ -13,3 +13,6 @@ const max = () => {
 const randInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
 const randBool = (numerator, denominator) =>
     randInt(1, denominator + 1) < numerator;
+Array.prototype.copy = (copy) => {
+    for (let i = 0; i < this.length; i++) copy.push(this[i]);
+};

@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+    <!--a tool for simulating infection of a sort of virus in a crowd.-->
     <head>
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title id="title">virus mocker</title>
+        <title id="title">virus infection simulator</title>
         <script src="https://cdn.jsdelivr.net/npm/p5@1.1.9/lib/p5.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
         <link rel="stylesheet" href="virus.css" />
+        <link rel="shortcut icon" type="image/ico" href="virusIcon.jpg">
     </head>
     <body>
         <div id="inputs">
@@ -26,6 +28,18 @@
                 <input type="button" value="reset/start" onclick="initWorld()" id="reset" />
             </div>
             <div class="io">
+                <span id="svs">select the sort of the virus: </span>
+                <select id="virusSelect" value="customized" autofocus="true">
+                    <option value="customized" id="default-customized">customized</option>
+                    <option value="cold" id="cold">normal cold virus</option>
+                    <option value="flu" id="flu">flu virus</option>
+                    <option value="sars" id="sars">SARS</option>
+                    <option value="covid19alpha" id="covid19alpha">COVID 19 alpha(&alpha;) strain</option>
+                    <option value="covid19delta" id="covid19delta">COVID 19 delta(&delta;) strain</option>
+                    <option value="covid19omicron" id="covid19omicron">COVID 19 omicron(&omicron;) strain</option>
+                </select>
+            </div>
+            <div class="io">
                 <span id="ir">infection ratio: </span>
                 <input
                     type="range"
@@ -34,7 +48,7 @@
                     max="1"
                     step="0.01"
                     value="0.5"
-                    oninput="onInfectionRatioChange()"
+                    onchange="onInfectionRatioChange()"
                 > </input><span id="infectionRatioOutput">50%</span>
             </div>
             <div class="io">

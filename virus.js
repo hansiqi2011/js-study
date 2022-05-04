@@ -5,7 +5,7 @@ const WORLD_SIZE = 600;
 /**how long an infected people will be cured after being infected */
 const recoverTime = 500;
 /**how possible an infected person can infect an uninfected people */
-let infectionRatio = 0.01;
+let infectionRatio = 0.5;
 /**how many people are infected */
 let infectionCount = 1;
 let antibodyCount = 0;
@@ -61,8 +61,8 @@ let infectionChart = new Chart(ctx, {
         },
     },
 });
-let langMode;
-let languages = {
+let langMode = "eng";
+const languages = {
     eng: [
         "select language mode: ",
         "reset/start",
@@ -73,9 +73,17 @@ let languages = {
         "vaccine effective ratio: ",
         "infected people number: ",
         "add positive",
-        "virus mocker",
+        "virus infection simulator",
         "how many people infected",
         "how many people cured",
+        "select the sort of the virus: ",
+        "customized",
+        "normal cold virus",
+        "flu virus",
+        "SARS",
+        "COVID 19 alpha(&alpha;) strain",
+        "COVID 19 delta(&delta;) strain",
+        "COVID 19 omicron(&omicron;) strain",
     ],
     "sim-chn": [
         "选择语言：",
@@ -90,7 +98,23 @@ let languages = {
         "病毒传染模拟器",
         "感染人数",
         "治愈人数",
+        "选择病毒、毒株：",
+        "自定义",
+        "普通感冒病毒",
+        "流行性感冒病毒",
+        "非典型肺炎病毒",
+        "新型冠状病毒阿尔法(&alpha;)毒株",
+        "新型冠状病毒德尔塔(&delta;)毒株",
+        "新型冠状病毒奥密克戎(&omicron;)毒株",
     ],
+};
+const r0s = {
+    cold: 0,
+    flu: 1.3,
+    sars: 3.5,
+    covid19alpha: 2.6,
+    covid19delta: 6.5,
+    covid19omicron: 7.5,
 };
 let started = false;
 const getid = (id) => document.getElementById(id);
@@ -100,7 +124,7 @@ const getid = (id) => document.getElementById(id);
  * @param {int} max the maximum number
  * @returns {int} a random int between min and max
  */
-const randInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
+const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 /**
  * create the person
  * @returns {object} a person
@@ -250,7 +274,7 @@ function calculatePositiveCount(persons) {
 function draw() {
     let tmp = langMode;
     langMode = getid("langSelect").value;
-    if (tmp !== langMode) setPageLang(langMode);
+    if (tmp !== langMode) setPageLang();
     fill(0);
     rect(0, 0, WORLD_SIZE, WORLD_SIZE);
     population.forEach((person) => {
@@ -263,6 +287,7 @@ function draw() {
     });
     calculatePositiveCount(population);
     showInfection();
+    selectVirus();
 }
 
 function onInfectionRatioChange() {
@@ -306,19 +331,27 @@ function clearChart() {
     infectionChart.data.datasets[1].data = [];
     count = -1;
 }
-function setPageLang(language) {
-    getid("slm").innerHTML = languages[language][0];
-    document.getElementById("reset").value = languages[language][1];
-    getid("ir").innerHTML = languages[language][2];
-    getid("irg").innerHTML = languages[language][3];
-    getid("vs").innerHTML = languages[language][4];
-    getid("vr").innerHTML = languages[language][5];
-    getid("ver").innerHTML = languages[language][6];
-    getid("addPositive").value = languages[language][8];
-    getid("title").innerHTML = languages[language][9];
-    infectionChart.data.datasets[0].label = languages[language][10];
-    infectionChart.data.datasets[1].label = languages[language][11];
+function setPageLang() {
+    getid("slm").innerHTML = languages[langMode][0];
+    document.getElementById("reset").value = languages[langMode][1];
+    getid("ir").innerHTML = languages[langMode][2];
+    getid("irg").innerHTML = languages[langMode][3];
+    getid("vs").innerHTML = languages[langMode][4];
+    getid("vr").innerHTML = languages[langMode][5];
+    getid("ver").innerHTML = languages[langMode][6];
+    getid("addPositive").value = languages[langMode][8];
+    getid("title").innerHTML = languages[langMode][9];
+    infectionChart.data.datasets[0].label = languages[langMode][10];
+    infectionChart.data.datasets[1].label = languages[langMode][11];
     infectionChart.update();
+    getid("svs").innerHTML = languages[langMode][12];
+    getid("default-customized").innerHTML = languages[langMode][13];
+    getid("cold").innerHTML = languages[langMode][14];
+    getid("flu").innerHTML = languages[langMode][15];
+    getid("sars").innerHTML = languages[langMode][16];
+    getid("covid19alpha").innerHTML = languages[langMode][17];
+    getid("covid19delta").innerHTML = languages[langMode][18];
+    getid("covid19omicron").innerHTML = languages[langMode][19];
 }
 function onInfectionRangeChange() {
     infectionRange = getid("infectionRange").value;
@@ -327,4 +360,12 @@ function onInfectionRangeChange() {
 function switchVaccine() {
     vaccineUsed = getid("vaccineSwitch").checked;
     getid("vaccinateRatio").disabled = getid("VER").disabled = !vaccineUsed;
+}
+function selectVirus() {
+    let customizate = getid("virusSelect").value === "customized";
+    getid("infectionRange").disabled = getid("infectionRatio").disabled =
+        !customizate;
+    if (!customizate) {
+        infectionRatio = r0s[getid("virusSelect").value] / 50;
+    }
 }
