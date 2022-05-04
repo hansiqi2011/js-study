@@ -61,7 +61,6 @@ let infectionChart = new Chart(ctx, {
         },
     },
 });
-let langMode = "eng";
 const languages = {
     eng: [
         "select language mode: ",
@@ -124,6 +123,8 @@ const getid = (id) => document.getElementById(id);
  * @param {int} max the maximum number
  * @returns {int} a random int between min and max
  */
+let langMode = "sim-chn";
+setPageLang();
 const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 /**
  * create the person
