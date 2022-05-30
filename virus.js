@@ -1,5 +1,5 @@
 /**the setting number of people */
-const INIT_PEOPLE_NUMBER = 100;
+let peopleNumber = 50;
 /**the size of the world */
 const WORLD_SIZE = 600;
 /**how long an infected people will be cured after being infected */
@@ -24,6 +24,7 @@ let infectionRange = 40;
 let vaccineUsed = false;
 /**context */
 const ctx = document.getElementById("infectionChart").getContext("2d");
+let instructionsHidden = true;
 let infectionChart = new Chart(ctx, {
     type: "line",
     data: {
@@ -55,8 +56,8 @@ let infectionChart = new Chart(ctx, {
         scales: {
             y: {
                 beginAtZero: true,
-                suggestedMin: INIT_PEOPLE_NUMBER,
-                suggestedMax: INIT_PEOPLE_NUMBER,
+                suggestedMin: peopleNumber,
+                suggestedMax: peopleNumber,
             },
         },
     },
@@ -64,18 +65,14 @@ let infectionChart = new Chart(ctx, {
 const languages = {
     eng: [
         "select language mode: ",
-        "reset/start",
+        "select the sort of the virus: ",
         "infection ratio: ",
         "distance for infecting: ",
         "use vaccine",
         "vaccination ratio: ",
         "vaccine effective ratio: ",
-        "infected people number: ",
-        "add positive",
         "virus infection simulator",
-        "how many people infected",
-        "how many people cured",
-        "select the sort of the virus: ",
+        "infected people number: ",
         "customized",
         "normal cold virus",
         "flu virus",
@@ -83,21 +80,23 @@ const languages = {
         "COVID 19 alpha(&alpha;) strain",
         "COVID 19 delta(&delta;) strain",
         "COVID 19 omicron(&omicron;) strain",
+        "people number: ",
+        "click to show the instructions",
+        "reset/start",
+        "add positive",
+        "how many people infected",
+        "how many people cured",
     ],
-    "sim-chn": [
+    simchn: [
         "选择语言：",
-        "重新开始模拟/开始模拟",
+        "选择病毒、毒株：",
         "感染率：",
         "感染所需距离：",
         "是否使用疫苗",
-        "疫苗接种率：",
         "疫苗有效率：",
-        "感染人数：",
-        "增加感染者（病例）",
+        "疫苗接种率：",
         "病毒传染模拟器",
-        "感染人数",
-        "治愈人数",
-        "选择病毒、毒株：",
+        "感染人数：",
         "自定义",
         "普通感冒病毒",
         "流行性感冒病毒",
@@ -105,8 +104,15 @@ const languages = {
         "新型冠状病毒阿尔法(&alpha;)毒株",
         "新型冠状病毒德尔塔(&delta;)毒株",
         "新型冠状病毒奥密克戎(&omicron;)毒株",
+        "人数：",
+        "显示使用说明",
+        "重新开始模拟/开始模拟",
+        "增加感染者（病例）",
+        "感染人数",
+        "治愈人数",
     ],
 };
+const langs = [new pair(), new pair()];
 const r0s = {
     cold: 0,
     flu: 1.3,
@@ -117,15 +123,9 @@ const r0s = {
 };
 let started = false;
 const getid = (id) => document.getElementById(id);
-/**
- * random int
- * @param {int} min the minimum number
- * @param {int} max the maximum number
- * @returns {int} a random int between min and max
- */
-let langMode = "sim-chn";
+let langMode = "simchn";
 setPageLang();
-const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+setPageLang();
 /**
  * create the person
  * @returns {object} a person
@@ -146,7 +146,7 @@ const createPerson = () => ({
  */
 function createPopulation() {
     let population = [];
-    for (let index = 0; index < INIT_PEOPLE_NUMBER; index++) {
+    for (let index = 0; index < peopleNumber; index++) {
         population.push(createPerson());
     }
     return population;
@@ -160,6 +160,8 @@ function infect(person) {
     person.isPositive = true;
     person.hasAntibody = true;
     person.healthLevel = 0;
+    person.xs = randInt(-1, 1);
+    person.ys = randInt(-1, 1);
 }
 
 /**
@@ -168,8 +170,14 @@ function infect(person) {
  */
 function randomWalk(person) {
     if (Math.random() < 0.02) {
-        person.xs = randInt(-2, 2);
-        person.ys = randInt(-2, 2);
+        if (person.isPositive) {
+            person.xs = randInt(-1, 1);
+            person.ys = randInt(-1, 1);
+        }
+        if (person.isPositive) {
+            person.xs = randInt(-2, 2);
+            person.ys = randInt(-2, 2);
+        }
     }
     person.x += person.xs;
     person.y += person.ys;
@@ -244,34 +252,41 @@ function drawPerson(person) {
  */
 function showInfection() {
     getid("infectionOutput").innerHTML =
-        languages[langMode][7] +
-        str(infectionCount) +
-        "/" +
-        str(INIT_PEOPLE_NUMBER);
+        str(infectionCount) + "/" + str(peopleNumber);
 }
 /**
- *
- * @param {object[]} population
- * @returns
+ * count the number of people cured in the area
+ * @param {object[]} population the population in the area
+ * @returns how many cured people there are in the area
  */
 function countCured(population) {
     return population.reduce((result, person) => {
         return !person.isPositive && person.hasAntibody ? result + 1 : result;
     }, 0);
 }
-
+/**
+//  * count the number of people infected (but not cured) in the area
+//  * @param {object[]} population the population in the area
+//  * @returns how many infected (but not cured) people there are in the area
+//  */
 function countInfected(population) {
     return population.reduce((result, person) => {
         return person.isPositive ? result + 1 : result;
     }, 0);
 }
-
+/**
+//  * update the varible infectionCount and the varible antibodyCount
+//  * @param {Object[]} persons the population
+//  */
 function calculatePositiveCount(persons) {
     simulationCompleted();
     infectionCount = countInfected(persons);
     antibodyCount = countCured(persons);
 }
 
+/**
+//  * the draw function for p5js
+//  */
 function draw() {
     let tmp = langMode;
     langMode = getid("langSelect").value;
@@ -313,7 +328,7 @@ function onInfectionRangeChange() {
     getid("infectionRangeOutput").innerHTML = infectionRange;
 }
 function addPositive() {
-    if (started) infect(population[randInt(1, INIT_PEOPLE_NUMBER)]);
+    if (started) infect(population[randInt(1, peopleNumber)]);
 }
 function simulationCompleted() {
     const d = infectionChart.data.datasets[0].data;
@@ -337,26 +352,36 @@ function clearChart() {
     count = -1;
 }
 function setPageLang() {
-    getid("slm").innerHTML = languages[langMode][0];
-    document.getElementById("reset").value = languages[langMode][1];
-    getid("ir").innerHTML = languages[langMode][2];
-    getid("irg").innerHTML = languages[langMode][3];
-    getid("vs").innerHTML = languages[langMode][4];
-    getid("vr").innerHTML = languages[langMode][5];
-    getid("ver").innerHTML = languages[langMode][6];
-    getid("addPositive").value = languages[langMode][8];
-    getid("title").innerHTML = languages[langMode][9];
-    infectionChart.data.datasets[0].label = languages[langMode][10];
-    infectionChart.data.datasets[1].label = languages[langMode][11];
+    getid("reset").value = languages[langMode][18];
+    getid("addPositive").value = languages[langMode][19];
+    infectionChart.data.datasets[0].label = languages[langMode][20];
+    infectionChart.data.datasets[1].label = languages[langMode][21];
     infectionChart.update();
-    getid("svs").innerHTML = languages[langMode][12];
-    getid("default-customized").innerHTML = languages[langMode][13];
-    getid("cold").innerHTML = languages[langMode][14];
-    getid("flu").innerHTML = languages[langMode][15];
-    getid("sars").innerHTML = languages[langMode][16];
-    getid("covid19alpha").innerHTML = languages[langMode][17];
-    getid("covid19delta").innerHTML = languages[langMode][18];
-    getid("covid19omicron").innerHTML = languages[langMode][19];
+    let keys = [
+        "slm",
+        "svs",
+        "ir",
+        "irg",
+        "vs",
+        "vr",
+        "ver",
+        "title",
+        "I",
+        "default-customized",
+        "cold",
+        "flu",
+        "sars",
+        "covid19alpha",
+        "covid19delta",
+        "covid19omicron",
+        "pn",
+        "instructionLink",
+    ];
+    keys.forEach((k, idx) => {
+        const elm = getid(k);
+        const txt = languages[langMode][idx];
+        elm.innerHTML = txt;
+    });
 }
 function switchVaccine() {
     vaccineUsed = getid("vaccineSwitch").checked;
@@ -374,4 +399,12 @@ function selectVirus() {
         infectionChart.data.labels[infectionChart.data.labels.length - 1] =
             str(count);
     }
+}
+
+function onPersonNumberChange() {
+    infectionChart.options.scales.y.suggestedMin =
+        infectionChart.options.scales.y.suggestedMax =
+        peopleNumber =
+            getid("peopleNumberInput").value;
+    getid("peopleNumberOutput").innerHTML = str(peopleNumber);
 }

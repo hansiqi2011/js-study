@@ -1,10 +1,10 @@
 //settings
 /**
- * the size of the game bord.
+ * the size of the game board.
  */
 const size = 8;
 /**
- * the choosed colors of the apple.
+ * the three kinds of colors of the apple.
  */
 const appleColors = ["green", "yellow", "red"];
 /**
@@ -374,7 +374,7 @@ function drawApple(x, y, size) {
 /**
  * the step counter
  */
-var counter = 0;
+let counter = 0;
 /**
  * check if the snake needs to update the posation.
  * @param {*} speed the speed of the snake.

@@ -4,8 +4,11 @@ div.input {
 div#inputs {
     font-size: medium;
 }
-p#spreadSpeedOutput {
+span#spreadSpeedOutput {
     display: inline;
+}
+p {
+    margin: 0px;
 }
 div.io {
     display: block;
@@ -25,6 +28,12 @@ input#reset {
 input#addPositive {
     color: rgba(255, 0, 0, 100%);
 }
+input[type="range"] {
+    background-color: blue;
+}
+input[type="button"] {
+    background-color: #ddd;
+}
 div#sim {
     display: inline-block;
 }
@@ -40,6 +49,24 @@ select {
 }
 option#default-customized {
     background-color: yellow;
-    color: red;
+    color: bule;
     font-style: italic;
+}
+div.circle {
+    display: inline-block;
+    border-radius: 100%;
+    width: 10px;
+    height: 10px;
+    background-color: black;
+    margin-right: 2px;
+}
+div.instruction {
+    margin: 5px;
+    font-family: 微软雅黑;
+}
+.ins {
+    font-size: 20px;
+}
+img {
+    width: 1000px;
 }
